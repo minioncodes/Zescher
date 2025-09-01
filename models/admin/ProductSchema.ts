@@ -46,7 +46,7 @@ const ProductSchema = new Schema<IProduct>(
     attributes: [
       {
         key: { type: String }, // e.g., "Material"
-        value: { type: String }, // e.g., "Cotton"
+        value: { type: String }, 
       },
     ],
 

@@ -8,11 +8,10 @@ import connectDB from "@/lib/mongo";
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
         await connectDB();
-        console.log("mongo uri = ",process.env.MONGO_URI)
         const body = await req.json();
         const { name, email, password, location, phoneNumber, dateOfBirth, address, gender } = body;
         const cookieStore = await cookies();
-        const hashedPassword = await bcrypt.hashSync(body.password, 10);
+        const hashedPassword = await bcrypt.hashSync(password, 10);
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return NextResponse.json({ msg: "user alrady exist" }, { status: 400 });
@@ -28,7 +27,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             address,
             gender
         });
-
         await newUser.save();
         if (!process.env.SECRET_KEY) throw new Error("SECRET_KEY is not defined");
         const token = jwt.sign({ id: newUser._id, email: newUser.email }, process.env.SECRET_KEY, { expiresIn: "1h" });
@@ -46,5 +44,3 @@ export async function POST(req: NextRequest, res: NextResponse) {
         return NextResponse.json({ msg: e.message }, { status: 500 })
     }
 }
-// Fzp2LPUna2CaDa8B
-// devs_db_user

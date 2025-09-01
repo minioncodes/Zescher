@@ -8,8 +8,6 @@ let cached = (global as any).mongoose;
 if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
 }
-console.log("cached = ",cached);
-console.log("cached cann = ",cached.conn);
 async function connectDB() {
   if (cached.conn) {
     return cached.conn;

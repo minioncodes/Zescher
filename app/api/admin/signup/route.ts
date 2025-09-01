@@ -1,34 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
-import Admin from "@/models/admin/Signup"
-import jwt from "jsonwebtoken"
+import Admin from "@/models/admin/Signup";
 import connectDB from "@/lib/mongo";
 
-console.log("adming post function got called")
 export async function POST(req: NextRequest) {
-    try {
-        await connectDB();
-        const cookiestore = await cookies();
-        const { name, email, password } = await req.json();
-        const hashPassword = await bcrypt.hash(password, 10);
-        const existingAdmin = await Admin.findOne({ email: email });
-        if (existingAdmin) {
-            return NextResponse.json("Admin already exists", { status: 400 });
-        }
-        const response = await Admin.create({
-            name,
-            email,
-            password: hashPassword,
-            createdAt: new Date()
-        })
-        const adminToken = jwt.sign({ email: response.email, id: response._id }, process.env.SECRET_KEY as string, { expiresIn: "7d" });
-        cookiestore.set("adminToken", adminToken, {
-            httpOnly: true, maxAge: 60 * 60 * 24 * 7
-        })
-        return NextResponse.json({ response, adminToken })
+  try {
+    await connectDB();
+    console.log("MongoDB connected successfully");
 
-    } catch (error) {
-        return NextResponse.json("Internal Server Error", { status: 500 })
+    const { name, email, password } = await req.json();
+
+
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingAdmin) {
+      return NextResponse.json(
+        { message: "Admin already exists" },
+        { status: 400 }
+      );
     }
+
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+
+    const newAdmin = await Admin.create({
+      name,
+      email,
+      password: hashPassword,
+      createdAt: new Date(),
+    });
+
+  
+    return NextResponse.json(
+      {
+        message: "Admin registered successfully",
+        admin: {
+          id: newAdmin._id,
+          name: newAdmin.name,
+          email: newAdmin.email,
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error in signup:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }

@@ -28,6 +28,7 @@ export interface IProduct extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+   createdBy: mongoose.Types.ObjectId;
 }
 
 const ProductSchema = new Schema<IProduct>(
@@ -73,6 +74,7 @@ const ProductSchema = new Schema<IProduct>(
 
     isFeatured: { type: Boolean, default: false }, // show on homepage
     isActive: { type: Boolean, default: true },   // product visibility
+    createdBy: { type: Schema.Types.ObjectId, ref: "Admin", required: true }
   },
   { timestamps: true }
 );

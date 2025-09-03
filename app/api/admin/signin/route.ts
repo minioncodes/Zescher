@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return NextResponse.json(
@@ -26,8 +25,6 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-
-
     const adminToken = jwt.sign(
       { email: admin.email, id: admin._id },
       process.env.SECRET_KEY as string,
@@ -46,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     res.cookies.set("adminToken", adminToken, {
       httpOnly: true,
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7, 
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });

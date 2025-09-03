@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IProduct extends Document {
   name: string;
-  slug: string; 
+  slug: string;
   description: string;
   price: number;
   stock: number;
@@ -28,7 +28,7 @@ export interface IProduct extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-   createdBy: mongoose.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId;
 }
 
 const ProductSchema = new Schema<IProduct>(
@@ -38,19 +38,15 @@ const ProductSchema = new Schema<IProduct>(
     description: { type: String, required: true },
     price: { type: Number, required: true },
     stock: { type: Number, required: true, default: 0 },
-
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     brand: { type: String },
-
-    images: [{ type: String, required: true }], 
-
+    images: [{ type: String, required: true }],
     attributes: [
       {
-        key: { type: String }, // e.g., "Material"
-        value: { type: String }, 
+        key: { type: String },
+        value: { type: String },
       },
     ],
-
     variants: [
       {
         sku: { type: String, required: true },
@@ -60,7 +56,6 @@ const ProductSchema = new Schema<IProduct>(
         stock: { type: Number },
       },
     ],
-
     ratings: [
       {
         userId: { type: String, required: true },
@@ -69,11 +64,9 @@ const ProductSchema = new Schema<IProduct>(
         createdAt: { type: Date, default: Date.now },
       },
     ],
-
     averageRating: { type: Number, default: 0 },
-
-    isFeatured: { type: Boolean, default: false }, // show on homepage
-    isActive: { type: Boolean, default: true },   // product visibility
+    isFeatured: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "Admin", required: true }
   },
   { timestamps: true }

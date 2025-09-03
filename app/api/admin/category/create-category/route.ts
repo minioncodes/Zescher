@@ -23,14 +23,14 @@ export async function POST(req: NextRequest) {
         if (existingCategory) {
             return NextResponse.json({ msg: "the category already exist" }, { status: 400 });
         }
-        await Category.create({
+        const response = await Category.create({
             name,
             slug,
             description,
             isActive,
             createdBy:adminId
         })
-        return NextResponse.json({ msg: "category created" }, { status: 201 });
+        return NextResponse.json({ msg: "category created",response }, { status: 201 });
     } catch (e: any) {
         console.log(e.message);
         return NextResponse.json({ msg: "some error in category creation" }, { status: 500 });

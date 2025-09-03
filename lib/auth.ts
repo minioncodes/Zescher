@@ -18,22 +18,25 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async signIn({ user }: { user: Customer }) {
-            const existingUser = await User.findOne({
-                where: { email: user.email! },
-            });
-            if (!existingUser) {
-                await User.create({
-                    data: {
+            try {
+                await connectDB();
+                console.log("Customer = ", user);
+                const existingUser = await User.findOne({ email: user.email! });
+                if (!existingUser) {
+                    await User.create({
                         name: user.name || "No Name",
                         username: `user_${Math.random().toString(36).substring(7)}`,
-                        email: user.email!,
+                        email: user.email,
                         password: "******",
                         phonenumber: "999999999",
                         profession: "enter your profession",
-                    },
-                });
+                    });
+                }
+                return true;
+            } catch (error: any) {
+                console.error("SignIn callback error:", error);
+                return `/auth/error?error=${encodeURIComponent(error.message)}`;
             }
-            return true;
         },
         async jwt({ token, user }: { token: JWT; user?: Customer }) {
             if (user) {

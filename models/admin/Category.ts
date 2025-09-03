@@ -4,11 +4,10 @@ export interface ICategory extends Document {
     slug: string;
     description?: string;
     image?: string; 
-    // tags?: string[]; 
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
-    createdBy: mongoose.Types.ObjectId;
+    createdBy: string
 }
 
 const CategorySchema=new mongoose.Schema<ICategory>(
@@ -17,8 +16,8 @@ const CategorySchema=new mongoose.Schema<ICategory>(
         slug:{type:String,required:true},
         description:{type:String},
         image:{type:String},
-        isActive:{type:Boolean},
-        createdBy : { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true }
+        isActive:{type:Boolean,required:true},
+        createdBy : { type: String, ref: "Admin", required: true }
     },
     {timestamps:true}
 )

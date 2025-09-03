@@ -28,7 +28,7 @@ export interface IProduct extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: mongoose.Types.ObjectId;
+  createdBy: string;
 }
 
 const ProductSchema = new Schema<IProduct>(
@@ -67,7 +67,7 @@ const ProductSchema = new Schema<IProduct>(
     averageRating: { type: Number, default: 0 },
     isFeatured: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
-    createdBy: { type: Schema.Types.ObjectId, ref: "Admin", required: true }
+    createdBy: { type: String, ref: "Admin", required: true }
   },
   { timestamps: true }
 );

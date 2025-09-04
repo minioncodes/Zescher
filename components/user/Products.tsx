@@ -7,9 +7,7 @@ export default async function Products() {
     <div className="p-6 shadow-xl rounded-2xl bg-gray-300 text-white border border-green-500 max-w-3xl mx-auto mt-10">
       <h1 className="text-4xl font-extrabold text-green-400 mb-6 text-center">
         Products
-      </h1>
-
-     
+      </h1>    
       <ul className="space-y-3">
         {products?.map((product) => (
           <li

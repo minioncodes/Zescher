@@ -49,7 +49,7 @@ const ProductSchema = new Schema<IProduct>(
     ],
     variants: [
       {
-        sku: { type: String, required: true },
+        sku: { type: String},
         color: { type: String },
         size: { type: String },
         price: { type: Number },

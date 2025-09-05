@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import Product from "@/models/admin/ProductSchema";
 import dbConnect from "@/lib/mongo";
-import cloudinary from "@/lib/cloudinary";
 import { AdminPayload } from "../../category/create-category/route";
-import { jwtVerify } from "jose";
+import { jwtVerify } from "jose"
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
@@ -19,7 +18,6 @@ export async function POST(req: NextRequest) {
     );
     const adminId = payload.id;
     const body = await req.json();
-
     const newProduct = await Product.create({
       ...body,
       createdBy: adminId,

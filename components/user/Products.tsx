@@ -4,7 +4,7 @@ import { FaStar } from "react-icons/fa";
 
 export default async function Products() {
   const products = await getProducts();
-
+  console.log("products  = ",products);
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10">
       <h1 className="text-4xl font-extrabold text-green-500 mb-10 text-center">
@@ -20,7 +20,7 @@ export default async function Products() {
     
             <div className="relative w-full h-64 bg-gray-100">
               <Image
-                src= "/placeholder.png"
+                src={product.images[0]} 
                 alt={product.name}
                 fill
                 className="object-cover"

@@ -11,11 +11,11 @@ export default async function Products() {
         Products
       </h1>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {products?.map((product) => (
+      <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {products?.map((product) => (                 
           <div
             key={product._id}
-            className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300"
+            className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300 sm:grid-cols-2"
           >
     
             <div className="relative w-full h-64 bg-gray-100">

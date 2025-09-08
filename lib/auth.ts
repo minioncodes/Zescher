@@ -68,16 +68,17 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
                 const dbuser = await User.findOne({
                     where: { email: user.email! },
                 });
+                console.log("db user = ",dbuser);
                 token.uid = dbuser?.id;
             }
-            console.log("token = ", token);
+            // console.log("token = ", token);
             return token;
         },
         session({ session, token }: { session: Session; token: JWT }) {
             if (session.user) {
                 (session.user as any).id = token.uid;
             }
-            console.log("session =", session)
+            // console.log("session =", session)
             return session;
         },
     },

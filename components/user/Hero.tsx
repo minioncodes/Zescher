@@ -32,10 +32,10 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-2/5 mt-10 lg:mt-0 lg:pl-12">
+          <div className="hidden lg:block w-full lg:w-2/5 mt-10 lg:mt-0 lg:pl-12">
             <div className="relative w-full h-80 lg:h-[500px]">
               <Image
-                src="https://unsplash.com/photos/a-shopping-cart-next-to-a-sign-that-says-online-is-better-ByoLORRlUdk"
+                src="https://images.unsplash.com/photo-1521335629791-ce4aec67dd53?auto=format&fit=crop&w=1200&q=80"
                 alt="Fashion banner"
                 fill
                 className="object-cover rounded-2xl shadow-xl"

@@ -1,22 +1,50 @@
-"use client"
-import { signIn } from "next-auth/react"
-import { useSession } from "next-auth/react"
-import { signOut } from "next-auth/react"
+"use client";
+
+import { signIn, useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+// import { FiApple } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
+
 export default function Auth() {
-    const { data: session } = useSession();
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  // If logged in, redirect to home
+  useEffect(() => {
     if (session) {
-        return (
-            <>
-                Signed in as {session.user?.email}
-                <button onClick={() => signOut()}>Sign out</button>
-            </>
-        )
+      router.push("/");
     }
-    return (
-        <>
-            Not signed in <br />
-            <button onClick={() => signIn("google")}>Sign in with Google</button>
-            <button onClick={() => signIn("apple")}>Sign in with Apple</button>
-        </>
-    );
+  }, [session, router]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8 tracking-tight">
+        Welcome Back
+      </h1>
+
+      {/* Sign In Buttons */}
+      <div className="flex flex-col space-y-4 w-full max-w-xs">
+        <button
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+          className="flex items-center justify-center space-x-3 px-6 py-3 border border-gray-300 rounded-xl text-lg font-medium text-gray-700 hover:bg-gray-100 transition"
+        >
+          <FcGoogle size={24} />
+          <span>Sign in with Google</span>
+        </button>
+
+        <button
+          onClick={() => signIn("apple", { callbackUrl: "/" })}
+          className="flex items-center justify-center space-x-3 px-6 py-3 border border-gray-300 rounded-xl text-lg font-medium text-gray-700 hover:bg-gray-100 transition"
+        >
+          {/* <FiApple size={24} /> */}
+          <span>Sign in with Apple</span>
+        </button>
+      </div>
+
+      <p className="text-sm text-gray-500 mt-6">
+        By continuing, you agree to our Terms & Privacy Policy.
+      </p>
+    </div>
+  );
 }

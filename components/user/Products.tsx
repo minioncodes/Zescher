@@ -20,7 +20,7 @@ export default async function Products() {
     
             <div className="relative w-full h-64 bg-gray-100">
               <Image
-                src={product.images[0]} 
+                src={product.images[0] || ""} 
                 alt={product.name}
                 fill
                 className="object-cover"

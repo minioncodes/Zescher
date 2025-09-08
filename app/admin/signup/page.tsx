@@ -27,7 +27,6 @@ export default function SignupPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        alert("❌ " + data.message);
         return;
       }
       alert("✅ Signup successful: " + data.admin.name);

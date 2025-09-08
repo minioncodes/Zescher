@@ -21,7 +21,7 @@ export default function CreateProduct() {
 
       if (!res.ok) {
         const err = await res.json();
-        alert("Error: " + err.message);
+        alert("err " + err.message);
         return;
       }
 
@@ -31,7 +31,7 @@ export default function CreateProduct() {
       setImages([]);
     } catch (error) {
       console.error(error);
-      alert("Something went wrong!");
+      alert("something went wrong!");
     } finally {
       setLoading(false);
     }

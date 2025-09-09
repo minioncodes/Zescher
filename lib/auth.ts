@@ -65,9 +65,8 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
         },
         async jwt({ token, user }: { token: JWT; user?: Customer }) {
             if (user) {
-                const dbuser = await User.findOne({
-                    where: { email: user.email! },
-                });
+                const dbuser = await User.findOne({ email: user.email! },
+                );
                 console.log("db user = ",dbuser);
                 token.uid = dbuser?.id;
             }

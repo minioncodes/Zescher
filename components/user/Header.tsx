@@ -136,7 +136,7 @@ const Header = () => {
                   Sign In
                 </Link>
                 <Link
-                  href="/user/signup"
+                  href={"/user/signup"}
                   className="px-4 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-fuchsia-500 rounded-full shadow hover:opacity-90 transition"
                 >
                   Sign Up
@@ -214,7 +214,7 @@ const Header = () => {
                   Sign In
                 </Link>
                 <Link
-                  href="/user/signup"
+                  href={"/user/signup"}
                   onClick={() => setMobileOpen(false)}
                   className="px-4 py-2 text-center text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-fuchsia-500 rounded-md shadow hover:opacity-90 transition"
                 >

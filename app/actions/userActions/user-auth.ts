@@ -15,17 +15,13 @@ export async function getUserId() {
 export async function getCompleteUser(): Promise<IUserPlain | null> {
     console.log("server action got called ")
     try {
-        console.log("server inside the try catch ")
         await connectDB();
         const id = await getUserId();
-        console.log("id of the user = ", id)
         const completUser = await User.findOne({ _id: id });
-        console.log("complte user from the server action =- ", completUser)
         if (!completUser) {
             return null;
         }
         const plainComplteUser: IUserPlain = completUser.toObject({ getters: true }) as IUserPlain;
-        console.log("plaincomplete user from the action = ", plainComplteUser);
         return plainComplteUser
     } catch (e: any) {
         return null;

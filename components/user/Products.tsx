@@ -6,8 +6,8 @@ import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 
 export default function ProductsList({ products }: { products: any[] }) {
-  const dispatch = useDispatch();
-  console.log(products);
+  // const dispatch = useDispatch();
+  console.log("products frpm the component",products);
 
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10">
@@ -82,17 +82,18 @@ export default function ProductsList({ products }: { products: any[] }) {
               {/* Add to Cart */}
               <button
                 disabled={product.stock === 0}
-                onClick={() =>
-                  dispatch(
-                    addToCart({
-                      _id: product._id,
-                      name: product.name,
-                      price: product.price,
-                      images: product.images,
-                      quantity: 1,
-                    })
-                  )
-                }
+                // onClick={
+                  // () =>
+                  // dispatch(
+                  //   addToCart({
+                  //     _id: product._id,
+                  //     name: product.name,
+                  //     price: product.price,
+                  //     images: product.images,
+                  //     quantity: 1,
+                  //   })
+                  // )
+                // }
                 className={`w-full mt-3 py-2 px-4 rounded-xl text-white font-semibold transition ${
                   product.stock > 0
                     ? "bg-green-600 hover:bg-green-700"

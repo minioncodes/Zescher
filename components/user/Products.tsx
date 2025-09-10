@@ -1,9 +1,14 @@
-import { getProducts } from "@/app/actions/userActions/user-products";
+"use client";
+
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/redux/slices/user-slice/cartSlice";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 
-export default async function Products() {
-  const products = await getProducts();
+export default function ProductsList({ products }: { products: any[] }) {
+  const dispatch = useDispatch();
+  console.log(products);
+
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10">
       <h1 className="text-4xl font-extrabold text-green-500 mb-10 text-center">
@@ -11,26 +16,27 @@ export default async function Products() {
       </h1>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-        {products?.map((product) => (                 
+        {products?.map((product) => (
           <div
             key={product._id}
-            className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300 sm:grid-cols-2"
+            className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300"
           >
-    
+            {/* Image */}
             <div className="relative w-full h-64 bg-gray-100">
               <Image
-                src={product.images[0] || ""} 
+                src={product.images?.[0] || "/placeholder.png"}
                 alt={product.name}
                 fill
                 className="object-cover"
               />
               {product.isFeatured && (
-                <span className="absolute top-1 left-1 text-white text-xs px-3 py-1 rounded-full">
+                <span className="absolute top-1 left-1 text-white text-xs px-3 py-1 rounded-full bg-gradient-to-r from-indigo-600 to-fuchsia-500">
                   Featured
                 </span>
               )}
             </div>
 
+            {/* Info */}
             <div className="p-5 space-y-3">
               <h2 className="text-lg font-bold text-gray-900 truncate">
                 {product.name}
@@ -45,7 +51,7 @@ export default async function Products() {
                     key={i}
                     size={16}
                     className={`${
-                      i < Math.round(product.averageRating)
+                      i < Math.round(product.averageRating || 0)
                         ? "text-yellow-400 fill-yellow-400"
                         : "text-gray-300"
                     }`}
@@ -69,14 +75,24 @@ export default async function Products() {
                 </span>
               </div>
 
-              <div className="flex justify-between text-xs text-gray-500">
-                {/* <span>{product.category}</span> */}
-                {product.brand && <span>{product.brand}</span>}
-              </div>
+              {product.brand && (
+                <div className="text-xs text-gray-500">{product.brand}</div>
+              )}
 
-    
+              {/* Add to Cart */}
               <button
                 disabled={product.stock === 0}
+                onClick={() =>
+                  dispatch(
+                    addToCart({
+                      _id: product._id,
+                      name: product.name,
+                      price: product.price,
+                      images: product.images,
+                      quantity: 1,
+                    })
+                  )
+                }
                 className={`w-full mt-3 py-2 px-4 rounded-xl text-white font-semibold transition ${
                   product.stock > 0
                     ? "bg-green-600 hover:bg-green-700"

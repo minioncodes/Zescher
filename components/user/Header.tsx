@@ -77,8 +77,6 @@ const Header = () => {
                 </span>
               )}
             </Link>
-
-            {/* Auth Buttons or Profile */}
             {session ? (
               <div className="relative" ref={menuRef}>
                 <button

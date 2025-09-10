@@ -65,7 +65,7 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
                 const dbuser = await User.findOne({ email: user.email! },
                 );
                 console.log("db user = ",dbuser);
-                token.uid = dbuser?.id;
+                token.uid = dbuser?._id;
             }
             return token;
         },

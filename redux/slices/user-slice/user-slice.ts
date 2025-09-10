@@ -28,7 +28,7 @@ export const fetchUser = createAsyncThunk(
             if (!details) {
                 throw new Error("user details not found");
             }
-            // const userObj=details.toObject();
+            console.log("details from the async thunk api = ",details);
             return { id, details };
         } catch (err: any) {
             return thunkAPI.rejectWithValue(err.message || "sorry we are not able to fetch user");

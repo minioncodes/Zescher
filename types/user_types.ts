@@ -19,7 +19,7 @@ declare module "next-auth/jwt" {
 }
 
 export type IUserPlain = {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   password: string;

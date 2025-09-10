@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import {
   FiShoppingCart,
   FiMenu,
@@ -17,11 +19,14 @@ import {
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartCount] = useState(2);
 
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+   const cartCount = useSelector((state: RootState) =>
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -66,8 +71,8 @@ const Header = () => {
             </div>
 
           
-            <Link
-              href="#"
+          <Link
+              href="/user/cart"
               className="relative hover:scale-105 transition-transform"
             >
               <FiShoppingCart size={24} className="text-gray-700" />
@@ -211,7 +216,7 @@ const Header = () => {
                   Sign In
                 </Link>
                 <Link
-                  href={"/user/signup"}
+                  href="/user/signup"
                   onClick={() => setMobileOpen(false)}
                   className="px-4 py-2 text-center text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-fuchsia-500 rounded-md shadow hover:opacity-90 transition"
                 >

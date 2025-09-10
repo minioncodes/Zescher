@@ -20,7 +20,6 @@ const Header = () => {
   const [cartCount] = useState(2);
 
   const { data: session } = useSession();
-  console.log("session id =", session?.user?.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 

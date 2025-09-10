@@ -4,7 +4,6 @@ import { FaStar } from "react-icons/fa";
 
 export default async function Products() {
   const products = await getProducts();
-  console.log("products  = ",products);
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10">
       <h1 className="text-4xl font-extrabold text-green-500 mb-10 text-center">

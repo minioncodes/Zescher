@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { clearUser } from "./slices/user-slice/user-slice";
+import userReducer from '@/redux/slices/user-slice/user-slice'
 
 export const store = configureStore({
     reducer: {
-        clearUser
+        user:userReducer
     }
 })
 

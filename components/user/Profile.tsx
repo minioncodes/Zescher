@@ -4,12 +4,12 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FiUser, FiMail, FiLogOut } from "react-icons/fi";
+import { getCompleteUser } from "@/app/actions/userActions/user-auth";
+import { IUserPlain } from "@/types/user_types";
 
-export default function Profile() {
+export default function Profile({completeUser}:{completeUser:IUserPlain|null}) {
   const { data: session, status } = useSession();
   const router = useRouter();
-
-  // Redirect if not logged in
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/user/signin");
@@ -23,8 +23,9 @@ export default function Profile() {
       </div>
     );
   }
-
-  if (!session) return null; // handled by redirect above
+  if(!completeUser){
+    return null;
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
@@ -34,14 +35,14 @@ export default function Profile() {
         <div className="flex items-center space-x-3">
           <FiUser size={22} className="text-gray-600" />
           <span className="text-lg font-medium text-gray-800">
-            {session.user?.name || "No name set"}
+            {completeUser.name || "No name set"}
           </span>
         </div>
 
         <div className="flex items-center space-x-3">
           <FiMail size={22} className="text-gray-600" />
           <span className="text-lg font-medium text-gray-800">
-            {session.user?.email}
+            {completeUser.email}
           </span>
         </div>
 

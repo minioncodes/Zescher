@@ -8,13 +8,10 @@ import jwt from 'jsonwebtoken'
 
 function generateAppleClientSecret() {
     const now = Math.floor(Date.now() / 1000);
-
     const privateKey = process.env.APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-
     if (!privateKey?.includes("BEGIN PRIVATE KEY")) {
         throw new Error("invalid Apple private key: check your .env formatting");
     }
-
     return jwt.sign(
         {
             iss: process.env.APPLE_TEAM_ID!,
@@ -70,16 +67,15 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
                 console.log("db user = ",dbuser);
                 token.uid = dbuser?.id;
             }
-            // console.log("token = ", token);
             return token;
         },
         session({ session, token }: { session: Session; token: JWT }) {
             if (session.user) {
                 (session.user as any).id = token.uid;
             }
-            // console.log("session =", session)
             return session;
         },
+        
     },
     pages: {
         signIn: "auth/user/signin",

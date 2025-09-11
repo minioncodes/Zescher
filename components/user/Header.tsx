@@ -17,6 +17,7 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 
+
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -24,7 +25,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-   const cartCount = useSelector((state: RootState) =>
+  const cartCount = useSelector((state: RootState) =>
     state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
   );
 
@@ -42,7 +43,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/70 border-b border-gray-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-        
+
           <Link
             href="/"
             className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-fuchsia-500 bg-clip-text text-transparent"
@@ -60,7 +61,7 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
-     
+
             <div className="hidden sm:flex items-center bg-gray-100 px-3 py-1 rounded-full transition focus-within:ring-2 focus-within:ring-indigo-500">
               <FiSearch size={18} className="text-gray-500" />
               <input
@@ -70,8 +71,8 @@ const Header = () => {
               />
             </div>
 
-          
-          <Link
+
+            <Link
               href="/user/cart"
               className="relative hover:scale-105 transition-transform"
             >
@@ -137,8 +138,8 @@ const Header = () => {
                 >
                   Sign In
                 </Link>
-                <Link
-                  href={"/user/signup"}
+
+                <Link href="#"
                   className="px-4 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-fuchsia-500 rounded-full shadow hover:opacity-90 transition"
                 >
                   Sign Up
@@ -146,7 +147,7 @@ const Header = () => {
               </div>
             )}
 
-             {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle */}
             <button
               className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -216,7 +217,7 @@ const Header = () => {
                   Sign In
                 </Link>
                 <Link
-                  href="/user/signup"
+                  href="#"
                   onClick={() => setMobileOpen(false)}
                   className="px-4 py-2 text-center text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-fuchsia-500 rounded-md shadow hover:opacity-90 transition"
                 >

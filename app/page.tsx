@@ -6,12 +6,11 @@ import Products from "@/components/user/Products";
 
 export default function Home() {
   return (
-  <>
-<Header />
-<Hero />
+    <>
+      <Header />
+      <Hero />
 
-<Products />
-<FooterNav />
-  </>
+      <FooterNav />
+    </>
   );
 }

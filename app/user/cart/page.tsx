@@ -30,7 +30,7 @@ export default function CartPage() {
             key={item._id}
             className="flex items-center justify-between bg-white p-4 rounded-xl shadow"
           >
-            {/* Product Info */}
+            
             <div className="flex items-center space-x-4">
               <div className="relative w-20 h-20">
                 <Image
@@ -46,7 +46,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Quantity Controls */}
+           
             <div className="flex items-center space-x-3">
               <button
                 onClick={() =>
@@ -65,7 +65,6 @@ export default function CartPage() {
               </button>
             </div>
 
-            {/* Remove Item */}
             <button
               onClick={() => dispatch(removeFromCart({ id: item._id }))}
               className="text-red-500 hover:text-red-700 text-sm"
@@ -76,7 +75,7 @@ export default function CartPage() {
         ))}
       </div>
 
-      {/* Summary */}
+
       <div className="mt-10 flex justify-between items-center bg-white p-6 rounded-xl shadow">
         <h2 className="text-2xl font-bold">Total: ${total.toFixed(2)}</h2>
         <div className="flex space-x-4">

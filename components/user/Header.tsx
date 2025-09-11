@@ -146,8 +146,6 @@ const Header = () => {
                 </Link>
               </div>
             )}
-
-            {/* Mobile Menu Toggle */}
             <button
               className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
               onClick={() => setMobileOpen(!mobileOpen)}

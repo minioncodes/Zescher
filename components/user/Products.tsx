@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 
 export default function ProductsList({ products }: { products: any[] }) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
 
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10">
@@ -20,7 +20,7 @@ export default function ProductsList({ products }: { products: any[] }) {
             key={product._id}
             className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300"
           >
-            {/* Image */}
+    
             <div className="relative w-full h-64 bg-gray-100">
               <Image
                 src={product.images?.[0] || "/placeholder.png"}
@@ -35,7 +35,6 @@ export default function ProductsList({ products }: { products: any[] }) {
               )}
             </div>
 
-            {/* Info */}
             <div className="p-5 space-y-3">
               <h2 className="text-lg font-bold text-gray-900 truncate">
                 {product.name}

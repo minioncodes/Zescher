@@ -1,6 +1,6 @@
 "use client"
 import "./globals.css";
-import { StoreProvider } from "./StoreProvider";
+import StoreProvider from "./StoreProvider";
 import { SessionProvider } from "next-auth/react";
 export default function RootLayout({
   children,

@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getProducts } from "@/app/actions/userActions/user-products";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type CartItem = {
   _id: string;
@@ -15,7 +16,20 @@ type CartState = {
 const initialState: CartState = {
   items: [],
 };
-
+export const fetchCartProduct = createAsyncThunk(
+  "/fetchcartProduct",
+  async (_, thunkAPI) => {
+    try {
+      const cartProducts = await getProducts();
+      if (!cartProducts) {
+        throw new Error("cart products not found!")
+      }
+      return cartProducts;
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.message);
+    }
+  }
+)
 const cartSlice = createSlice({
   name: "cart",
   initialState,

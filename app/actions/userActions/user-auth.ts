@@ -21,7 +21,8 @@ export async function getCompleteUser(): Promise<IUserPlain | null> {
         if (!completUser) {
             return null;
         }
-        const plainComplteUser: IUserPlain = completUser.toObject({ getters: true }) as IUserPlain;
+        const plainComplteUser: IUserPlain = 
+        completUser.toObject({ getters: true }) as IUserPlain;
         return plainComplteUser
     } catch (e: any) {
         return null;

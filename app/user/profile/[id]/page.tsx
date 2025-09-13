@@ -6,7 +6,7 @@ import { useUser } from '@/hooks/userhooks/user'
 
 export default function page() {
   const { user, loading, err } = useUser();
-  // console.log("user fromt the page = ", user);
+               
   if (loading) {
     return <p>Loading user...</p>;
   }

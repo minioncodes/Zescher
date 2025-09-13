@@ -6,26 +6,22 @@ import { combineReducers } from "redux";
 import cartReducer from "./slices/user-slice/cartSlice";
 import userReducer from '@/redux/slices/user-slice/user-slice'
 
-// persist config
 const persistConfig = {
   key: "root",
   storage,
 };
 
-// combine reducers (important if you add more reducers later)
 const rootReducer = combineReducers({
   cart: cartReducer,
   user:userReducer
 });
-
-// wrap rootReducer with persistReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // required for redux-persist
+      serializableCheck: false, 
     }),
 });
 

@@ -5,6 +5,7 @@ import { addToCart } from "@/redux/slices/user-slice/cartSlice";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 
+
 export default function ProductsList({ products }: { products: any[] }) {
   const dispatch = useDispatch(); 
 

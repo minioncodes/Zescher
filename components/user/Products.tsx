@@ -34,7 +34,7 @@ export default function ProductsList({ products }: { products: any[] }) {
                 </span>
               )}
             </div>
-
+    v         
             <div className="p-5 space-y-3">
               <h2 className="text-lg font-bold text-gray-900 truncate">
                 {product.name}

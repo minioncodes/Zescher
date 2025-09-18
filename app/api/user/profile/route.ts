@@ -9,13 +9,11 @@ export async function PATCH(req: NextRequest) {
   try {
 
     await connectDB();
-
-    // Get logged-in user from session
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
+    console.log("email from the session = ",session.user.email);
     const body = await req.json();
     const {
       name,

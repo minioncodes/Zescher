@@ -5,6 +5,8 @@ import type { JWT } from "next-auth/jwt";
 import connectDB from "./mongo";
 import User from "@/models/User";
 import jwt from 'jsonwebtoken'
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from 'bcrypt'
 
 function generateAppleClientSecret() {
     const now = Math.floor(Date.now() / 1000);
@@ -36,13 +38,41 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
             clientId: process.env.APPLE_CLIENT_ID!,
             clientSecret: generateAppleClientSecret()
         }),
+        Credentials({
+            name: "Credentials",
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error("mismatch in the data")
+                }
+                await connectDB();
+                const existingUser = await User.findOne({ email: credentials.email });
+                if (!existingUser) {
+                    throw new Error("user not found!");
+                }
+                const isvalidpassword = await bcrypt.compare(credentials.password, existingUser.password);
+                if (!isvalidpassword) {
+                    throw new Error("password is invalid!")
+                }
+                return {
+                    id: existingUser._id.toString(),
+                    name: existingUser.name,
+                    email: existingUser.email
+                }
+            }
+        })
     ],
+    session:{
+        strategy:"jwt"
+    },
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async signIn({ user }: { user: Customer }) {
             try {
                 await connectDB();
-                console.log("Customer = ", user);
                 const existingUser = await User.findOne({ email: user.email! });
                 if (!existingUser) {
                     await User.create({
@@ -56,26 +86,25 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
                 }
                 return true;
             } catch (error: any) {
-                console.error("SignIn callback error:", error);
                 return `/auth/error?error=${encodeURIComponent(error.message)}`;
             }
         },
+        
         async jwt({ token, user }: { token: JWT; user?: Customer }) {
             if (user) {
                 const dbuser = await User.findOne({ email: user.email! },
                 );
-                console.log("db user = ",dbuser);
-                token.uid = dbuser?._id;
+                token.id = dbuser?._id;
             }
             return token;
         },
         session({ session, token }: { session: Session; token: JWT }) {
             if (session.user) {
-                (session.user as any).id = token.uid;
+                (session.user.id as any) = token.id;
             }
             return session;
         },
-        
+
     },
     pages: {
         signIn: "auth/user/signin",

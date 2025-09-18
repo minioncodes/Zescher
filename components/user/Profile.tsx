@@ -24,7 +24,7 @@ export default function Profile() {
     if (user) {
       setFormData({
         ...user,
-        address: user.address ? JSON.parse(user.address) : {},
+        address: user.address ? user.address : {},
       });
     }
   }, [user]);
@@ -58,7 +58,7 @@ export default function Profile() {
     try {
       const payload = {
         ...formData,
-        address: JSON.stringify(formData.address),
+        address: formData.address,
       };
 
       const res = await fetch("/api/user/profile", {

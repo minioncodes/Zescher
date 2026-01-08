@@ -70,7 +70,7 @@ export default function Profile() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Update failed");
 
-      setMessage("✅ Profile updated successfully!");
+      setMessage("Profile updated successfully!");
       setEditing(false);
       dispatch(fetchUser());
     } catch (err: any) {
@@ -85,7 +85,6 @@ export default function Profile() {
       <h1 className="text-4xl font-bold text-gray-900 mb-8 tracking-wide">My Profile</h1>
 
       <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 space-y-6">
-        {/* Name */}
         <div>
           <label className="block text-lg font-semibold text-gray-700 mb-1">Name</label>
           <input

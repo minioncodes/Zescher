@@ -1,25 +1,40 @@
-import { NextResponse } from "next/server";
+// middleware.ts
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-export async function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-  if (!token) {
-    return NextResponse.json({ msg: "token is not provided" }, { status: 401 });
-  }
-  try {
-    const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-    await jwtVerify(token, secret);
-    
-    return NextResponse.next();
-  } catch (e: any) {
+const ADMIN_PUBLIC = ["/admin/login"]; // add forgot-password, etc. if needed
 
-    return new NextResponse(
-      JSON.stringify({ msg: "token not provided probably" }),
-      { status: 401, headers: { 'content-type': 'application/json' } }
-    );
+export async function middleware(req: NextRequest) {
+  const { pathname, search } = req.nextUrl;
+
+  // Only guard /admin pages (not APIs or assets)
+  if (!pathname.startsWith("/admin")) return NextResponse.next();
+  if (ADMIN_PUBLIC.includes(pathname)) return NextResponse.next();
+
+  // Read your admin cookie
+  const token =
+    req.cookies.get("adminToken")?.value || req.cookies.get("token")?.value;
+
+  // No token → redirect to login with return URL
+  if (!token) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/admin/login";
+    url.searchParams.set("next", pathname + search);
+    return NextResponse.redirect(url);
+  }
+
+  try {
+    await jwtVerify(token, new TextEncoder().encode(process.env.SECRET_KEY));
+    return NextResponse.next();
+  } catch {
+    const url = req.nextUrl.clone();
+    url.pathname = "/admin/login";
+    url.searchParams.set("next", pathname + search);
+    return NextResponse.redirect(url);
   }
 }
+
 export const config = {
-  matcher: [],
+  matcher: ["/admin/dashboard/:path*"], // pages under /admin
 };

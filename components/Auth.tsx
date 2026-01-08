@@ -43,7 +43,6 @@ export default function Auth() {
         Welcome Back
       </h1>
 
-      {/* Sign In Buttons */}
       <div className="flex flex-col space-y-4 w-full max-w-xs">
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}

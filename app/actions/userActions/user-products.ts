@@ -1,7 +1,7 @@
 "use server";
 
 import ProductSchema, { IProduct } from "@/models/admin/ProductSchema";
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 
 export async function getProducts(): Promise<IProduct[]> {
   try {

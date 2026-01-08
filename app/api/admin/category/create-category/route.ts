@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from 'jsonwebtoken'
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 import Category from "@/models/admin/Category";
 import { cookies } from "next/headers";
 import { JWTPayload, jwtVerify } from "jose";

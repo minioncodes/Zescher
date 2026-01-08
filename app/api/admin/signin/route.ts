@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Admin from "@/models/admin/Signup";
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {

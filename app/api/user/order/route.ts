@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 import OrderSchema from "@/models/OrderSchema";
 import axios from "axios";
 import User from "@/models/User";

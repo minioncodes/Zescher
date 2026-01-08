@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import Product from "@/models/admin/ProductSchema";
-import dbConnect from "@/lib/mongo";
+import dbConnect from "@/lib/db";
 import { AdminPayload } from "../../category/create-category/route";
 import { upladProductImageToCloudinary } from "@/utils/cloudinary/product_cloudinary";
 import mongoose from "mongoose";

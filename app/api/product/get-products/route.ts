@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 import ProductSchema from "@/models/admin/ProductSchema";
 
 

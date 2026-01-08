@@ -1,5 +1,5 @@
 import ProductSchema from "@/models/admin/ProductSchema";
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 import { IProduct } from "@/models/admin/ProductSchema";
 import { revalidatePath } from "next/cache";
 

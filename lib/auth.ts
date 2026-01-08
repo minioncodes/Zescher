@@ -2,7 +2,7 @@ import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
 import type { NextAuthOptions, Session, User as Customer } from "next-auth";
 import type { JWT } from "next-auth/jwt";
-import connectDB from "./mongo";
+import connectDB from "./db";
 import User from "@/models/User";
 import jwt from 'jsonwebtoken'
 import Credentials from "next-auth/providers/credentials";

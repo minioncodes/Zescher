@@ -2,7 +2,7 @@
 import { IUserPlain } from "@/types/user_types";
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import connectDB from "@/lib/mongo"
+import connectDB from "@/lib/db"
 import User, { IUser } from "@/models/User"
 export async function getUserId() {
     const session = await getServerSession(authOptions);

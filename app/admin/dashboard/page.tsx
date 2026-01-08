@@ -2,6 +2,7 @@
 
 import CreateProduct from "@/components/admin/CreateProduct";
 import EditProduct from "@/components/admin/EditProduct";
+import DeleteProduct from "@/components/admin/DeleteProduct";
 import { useState, useEffect, useCallback } from "react";
 import {
   FiHome,
@@ -21,7 +22,7 @@ import {
 } from "react-icons/fi";
 
 const DashboardHome = () => <div>Welcome to Dashboard</div>;
-const DeleteProduct = () => <div>Delete Product</div>;
+// const DeleteProduct = () => <div>Delete Product</div>;
 const OrdersAll = () => <div>Total Orders</div>;
 const OrdersCanceled = () => <div>Canceled Orders</div>;
 const OrdersDelivered = () => <div>Delivered Orders</div>;
@@ -42,19 +43,18 @@ type Page =
 export default function Dashboard() {
   const [activePage, setActivePage] = useState<Page>("home");
 
-  // Collapsible groups
   const [openProducts, setOpenProducts] = useState(true);
   const [openOrders, setOpenOrders] = useState(true);
 
-  // Mobile sidebar state
+ 
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigate = useCallback((page: Page) => {
     setActivePage(page);
-    setMobileOpen(false); // close drawer on selection (mobile)
+    setMobileOpen(false); 
   }, []);
 
-  // Close drawer on ESC
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileOpen(false);

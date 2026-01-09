@@ -147,12 +147,37 @@ const handleDelete = async (_id: string) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <input className="input" placeholder="City / District / Town" value={form.city} onChange={(e) => handleChange("city", e.target.value)} />
-            <select className="input" value={form.state} onChange={(e) => handleChange("state", e.target.value)}>
-              <option value="">-- Select State --</option>
-              <option>Delhi</option>
-              <option>Maharashtra</option>
-              <option>Karnataka</option>
-              <option>Uttar Pradesh</option>
+            <select title="Select State" className="input" value={form.state} onChange={(e) => handleChange("state", e.target.value)}>
+            <option value="">-- Select State --</option>
+            <option>Andhra Pradesh</option>
+            <option>Arunachal Pradesh</option>
+            <option>Assam</option>
+            <option>Bihar</option>
+            <option>Chhattisgarh</option>
+            <option>Goa</option>
+            <option>Gujarat</option>
+            <option>Haryana</option>
+            <option>Himachal Pradesh</option>
+            <option>Jharkhand</option>
+            <option>Karnataka</option>
+            <option>Kerala</option>
+            <option>Madhya Pradesh</option>
+            <option>Maharashtra</option>
+            <option>Manipur</option>
+            <option>Meghalaya</option>
+            <option>Mizoram</option>
+            <option>Nagaland</option>
+            <option>Odisha</option>
+            <option>Punjab</option>
+            <option>Rajasthan</option>
+            <option>Sikkim</option>
+            <option>Tamil Nadu</option>
+            <option>Telangana</option>
+            <option>Tripura</option>
+            <option>Uttar Pradesh</option>
+            <option>Uttarakhand</option>
+            <option>West Bengal</option>
+
             </select>
             <input className="input" placeholder="Landmark (Optional)" value={form.landmark} onChange={(e) => handleChange("landmark", e.target.value)} />
             <input className="input" placeholder="Alternate Phone (Optional)" value={form.altPhone} onChange={(e) => handleChange("altPhone", e.target.value)} />

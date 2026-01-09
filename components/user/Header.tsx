@@ -72,6 +72,7 @@ const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
 
           {/* MOBILE: BURGER (LEFT) */}
           <button
+          title="Menu"
             onClick={() => setMobileOpen(true)}
             className="md:hidden p-2 rounded-full hover:bg-black/5"
           >
@@ -184,74 +185,6 @@ const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
               </Link>
             )}
 
-{/* MOBILE PROFILE ICON (RIGHT) */}
-<div className="md:hidden relative">
-  {user ? (
-    <button
-      onClick={() => setMobileProfileOpen((v) => !v)}
-      className="p-1 rounded-full"
-    >
-      {user.image ? (
-        <Image
-          src={user.image}
-          alt="User avatar"
-          width={32}
-          height={32}
-          className="rounded-full object-cover"
-        />
-      ) : (
-        <div className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold">
-          {getInitials(user.name, user.phoneNumber)}
-        </div>
-      )}
-    </button>
-  ) : (
-    <Link href="/auth" className="p-2 rounded-full hover:bg-black/5">
-      <FiUser size={20} />
-    </Link>
-  )}
-
-  {/* MOBILE PROFILE DROPDOWN */}
-  {user && mobileProfileOpen && (
-    <div className="absolute right-0 top-12 w-48 bg-white border border-black/10 rounded-xl shadow-lg overflow-hidden z-[1000]">
-      <Link
-        href="/profile"
-        onClick={() => setMobileProfileOpen(false)}
-        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-black/5"
-      >
-        <FiUser /> Profile
-      </Link>
-
-      <Link
-        href="/orders"
-        onClick={() => setMobileProfileOpen(false)}
-        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-black/5"
-      >
-        <FiPackage /> Orders
-      </Link>
-
-      <Link
-        href="/addresses"
-        onClick={() => setMobileProfileOpen(false)}
-        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-black/5"
-      >
-        <FiMapPin /> Addresses
-      </Link>
-
-      <div className="border-t" />
-
-      <button
-        onClick={() => {
-          setMobileProfileOpen(false);
-          signOut({ callbackUrl: "/" });
-        }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-black/5 text-left"
-      >
-        <FiLogOut /> Logout
-      </button>
-    </div>
-  )}
-</div>
 
 
             {/* CART */}
@@ -275,7 +208,7 @@ const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
         <div className="fixed inset-0 z-[900] bg-white flex flex-col">
           <div className="flex items-center justify-between px-6 h-16 border-b">
             <span className="text-lg font-black">ZESCHER</span>
-            <button onClick={() => setMobileOpen(false)}>
+            <button title="close" onClick={() => setMobileOpen(false)}>
               <FiX size={24} />
             </button>
           </div>

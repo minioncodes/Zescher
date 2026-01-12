@@ -1,15 +1,16 @@
 "use client";
 
 import { useDispatch } from "react-redux";
-import { addToCart } from "@/redux/slices/user-slice/cartSlice";
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
-import CheckoutButton from "../checkout/CheckoutButton";
-import ProductActions from "./ProductActions";
+import { addToCart } from "@/redux/slices/user-slice/cartSlice";
+import { useBuyNow } from "./useBuyNow";
 
 export default function ProductsList({ products = [] }: { products?: any[] }) {
   const dispatch = useDispatch();
+  const { buyNow } = useBuyNow();
+
 
   return (
     <div className="px-4 sm:px-6 max-w-7xl mx-auto mt-6">
@@ -19,11 +20,12 @@ export default function ProductsList({ products = [] }: { products?: any[] }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((product) => (
-          <div
-            key={product._id}
-            className="bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-200 flex flex-col"
-          >
-            <Link href={`/${product.slug}`} className="block">
+<div
+  key={product._id}
+  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-200 flex flex-col relative"
+>
+
+            <Link href={`/${product.slug}`} className="block flex-1">
               <div className="relative w-full h-44 sm:h-52 bg-gray-100">
                 <Image
                   src={product.images?.[0] || "/placeholder.png"}
@@ -69,9 +71,40 @@ export default function ProductsList({ products = [] }: { products?: any[] }) {
                 </p>
               </div>
             </Link>
-            <div className="hidden md:block lg:block">
-              <ProductActions product={product} />
-            </div>
+<div className="hidden lg:flex items-center gap-3 p-4 pt-0 mt-auto">
+<button
+  disabled={product.stock === 0}
+  onClick={() =>
+    dispatch(
+      addToCart({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        images: product.images,
+        quantity: 1,
+      })
+    )
+  }
+  className={`flex-1 px-4 py-2.5 text-sm rounded-lg font-semibold transition
+    ${
+      product.stock > 0
+        ? "bg-green-600 hover:bg-green-700 text-white"
+        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+    }
+  `}
+>
+  Add to Cart
+</button>
+
+{product.stock > 0 && (
+  <button
+    onClick={() => buyNow(product._id)}
+    className="flex-1 px-4 py-2.5 text-sm rounded-lg font-semibold bg-black text-white hover:bg-black/90"
+  >
+    Buy Now
+  </button>
+)}
+    </div>
           </div>
         ))}
       </div>

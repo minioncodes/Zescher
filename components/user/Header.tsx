@@ -40,7 +40,6 @@ function getInitials(name?: string | null, phone?: string | null): string {
 export default function Header() {
   const { data: session } = useSession();
   const user = session?.user as AppUser | undefined;
-const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -204,28 +203,43 @@ const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
       </div>
 
       {/* MOBILE DRAWER */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-[900] bg-white flex flex-col">
-          <div className="flex items-center justify-between px-6 h-16 border-b">
-            <span className="text-lg font-black">ZESCHER</span>
-            <button title="close" onClick={() => setMobileOpen(false)}>
-              <FiX size={24} />
-            </button>
-          </div>
-          <div className="flex-1 px-6 pt-8 space-y-6">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item}
-                href="#"
-                onClick={() => setMobileOpen(false)}
-                className="block text-2xl font-semibold"
-              >
-                {item}
-              </Link>
-            ))}
-          </div>
+      {/* BACKDROP */}
+      <div
+        onClick={() => setMobileOpen(false)}
+        className={`fixed inset-0 z-[800] bg-black/30 transition-opacity duration-300 ${
+          mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      />
+      
+      {/* SLIDE DRAWER */}
+      <div
+        className={`fixed top-0 left-0 h-full w-[85%] max-w-sm z-[900] bg-white flex flex-col
+        transform transition-transform duration-300 ease-out
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        {/* HEADER */}
+        <div className="flex items-center justify-between px-6 h-16 border-b">
+          <span className="text-lg font-black">ZESCHER</span>
+          <button title="close" onClick={() => setMobileOpen(false)}>
+            <FiX size={24} />
+          </button>
         </div>
-      )}
+      
+        {/* NAV ITEMS */}
+        <div className="flex-1 px-6 pt-8 space-y-6">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item}
+              href="#"
+              onClick={() => setMobileOpen(false)}
+              className="block text-2xl font-semibold"
+            >
+              {item}
+            </Link>
+          ))}
+        </div>
+      </div>
+
     </header>
   );
 }

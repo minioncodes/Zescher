@@ -40,7 +40,7 @@ function getInitials(name?: string | null, phone?: string | null): string {
 export default function Header() {
   const { data: session } = useSession();
   const user = session?.user as AppUser | undefined;
-
+const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function Header() {
     state.cart.items.reduce((sum, i) => sum + i.quantity, 0)
   );
 
-  // close dropdown on outside click
+  // Close profile dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (
@@ -68,15 +68,24 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-[999] bg-white border-b border-black/10">
       <div className="max-w-[1440px] mx-auto px-4">
-        <div className="h-16 flex items-center gap-6">
+        <div className="h-16 flex items-center gap-4">
+
+          {/* MOBILE: BURGER (LEFT) */}
+          <button
+          title="Menu"
+            onClick={() => setMobileOpen(true)}
+            className="md:hidden p-2 rounded-full hover:bg-black/5"
+          >
+            <FiMenu size={22} />
+          </button>
 
           {/* LOGO */}
           <Link href="/" className="text-xl font-black tracking-tight">
             ZESCHER
           </Link>
 
-          {/* NAV */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
+          {/* DESKTOP NAV */}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold ml-6">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item}
@@ -97,7 +106,7 @@ export default function Header() {
                 <input
                   autoFocus
                   placeholder="Search"
-                  className="w-40 border-b border-black text-sm outline-none mr-2"
+                  className="w-36 border-b border-black text-sm outline-none mr-2"
                 />
               )}
               <button
@@ -117,7 +126,7 @@ export default function Header() {
               />
             </div>
 
-            {/* PROFILE / SIGN IN */}
+            {/* DESKTOP PROFILE */}
             {user ? (
               <div className="relative hidden md:flex" ref={profileRef}>
                 <button
@@ -176,6 +185,8 @@ export default function Header() {
               </Link>
             )}
 
+
+
             {/* CART */}
             <Link
               href="/cart"
@@ -188,14 +199,6 @@ export default function Header() {
                 </span>
               )}
             </Link>
-
-            {/* MOBILE MENU */}
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="md:hidden p-2 rounded-full hover:bg-black/5"
-            >
-              <FiMenu size={22} />
-            </button>
           </div>
         </div>
       </div>
@@ -205,11 +208,10 @@ export default function Header() {
         <div className="fixed inset-0 z-[900] bg-white flex flex-col">
           <div className="flex items-center justify-between px-6 h-16 border-b">
             <span className="text-lg font-black">ZESCHER</span>
-            <button onClick={() => setMobileOpen(false)}>
+            <button title="close" onClick={() => setMobileOpen(false)}>
               <FiX size={24} />
             </button>
           </div>
-
           <div className="flex-1 px-6 pt-8 space-y-6">
             {NAV_ITEMS.map((item) => (
               <Link
@@ -221,50 +223,6 @@ export default function Header() {
                 {item}
               </Link>
             ))}
-
-            {user && (
-              <div className="pt-8 border-t space-y-5">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full overflow-hidden bg-black text-white flex items-center justify-center font-semibold">
-                    {user.image ? (
-                      <Image
-                        src={user.image}
-                        alt="User avatar"
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover"
-                      />
-                    ) : (
-                      getInitials(user.name, user.phoneNumber)
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">
-                      {user.name || "User"}
-                    </p>
-                    <p className="text-xs text-black/60">
-                      {user.phoneNumber}
-                    </p>
-                  </div>
-                </div>
-
-                <Link href="/profile" className="flex items-center gap-3 text-lg">
-                  <FiUser /> Profile
-                </Link>
-                <Link href="/orders" className="flex items-center gap-3 text-lg">
-                  <FiPackage /> Orders
-                </Link>
-                <Link href="/addresses" className="flex items-center gap-3 text-lg">
-                  <FiMapPin /> Addresses
-                </Link>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex items-center gap-3 text-lg text-left"
-                >
-                  <FiLogOut /> Logout
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}

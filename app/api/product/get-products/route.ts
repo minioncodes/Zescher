@@ -3,7 +3,7 @@ import connectDB from "@/lib/db";
 import ProductSchema from "@/models/admin/ProductSchema";
 
 
-console.log("get api route got called")
+
 export async function GET() {
     try {
         await connectDB();

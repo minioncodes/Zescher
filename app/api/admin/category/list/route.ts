@@ -1,6 +1,6 @@
 
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongo";
+import connectDB from "@/lib/db";
 import Category from "@/models/admin/Category";
 
 export async function GET() {

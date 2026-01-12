@@ -20,9 +20,10 @@ import {
   FiMenu,
   FiX,
 } from "react-icons/fi";
+import CreateCategory from "@/components/admin/CreateCategory";
 
 const DashboardHome = () => <div>Welcome to Dashboard</div>;
-// const DeleteProduct = () => <div>Delete Product</div>;
+
 const OrdersAll = () => <div>Total Orders</div>;
 const OrdersCanceled = () => <div>Canceled Orders</div>;
 const OrdersDelivered = () => <div>Delivered Orders</div>;
@@ -31,6 +32,7 @@ const Profile = () => <div>User Profile</div>;
 
 type Page =
   | "home"
+  | "product-category"
   | "addProduct"
   | "editProduct"
   | "deleteProduct"
@@ -67,6 +69,8 @@ export default function Dashboard() {
     switch (activePage) {
       case "home":
         return <DashboardHome />;
+      case "product-category":
+        return <CreateCategory />;
       case "addProduct":
         return <CreateProduct />;
       case "editProduct":
@@ -172,6 +176,14 @@ export default function Dashboard() {
               id="products-group"
               className={`${openProducts ? "block" : "hidden"} mt-2 ml-9 flex flex-col gap-1`}
             >
+              <button
+                onClick={() => navigate("product-category")}
+                className={`${itemBase} ${
+                  activePage === "product-category" ? active : inactive
+                }`}
+              >
+                <FiPlusCircle /> Add Category 
+              </button>
               <button
                 onClick={() => navigate("addProduct")}
                 className={`${itemBase} ${

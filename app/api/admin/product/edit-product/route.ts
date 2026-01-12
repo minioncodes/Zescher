@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import mongoose from "mongoose";
-import dbConnect from "@/lib/mongo";
+import dbConnect from "@/lib/db";
 import Product from "@/models/admin/ProductSchema";
 import Category from "@/models/admin/Category";
 import { upladProductImageToCloudinary } from "@/utils/cloudinary/product_cloudinary";
@@ -38,10 +38,10 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ msg: "Product not found" }, { status: 404 });
       }
 
-      /* Existing images user wants to keep */
+     
       const keepImages = formData.getAll("keepImages") as string[];
 
-      /* New uploaded images */
+    
       const files = formData.getAll("images");
       const uploadedImages: string[] = [];
 

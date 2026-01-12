@@ -1,7 +1,7 @@
 // app/api/admin/products/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import dbConnect from "@/lib/mongo";
+import dbConnect from "@/lib/db";
 import Product from "@/models/admin/ProductSchema";
 
 type AdminPayload = { id: string };

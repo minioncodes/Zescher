@@ -1,27 +1,18 @@
-"use client";
-
-import FooterNav from "@/components/user/FooterNav";
 import Hero from "@/components/user/Hero";
-import Products from "@/components/user/Products";
-import { IProduct } from "@/models/admin/ProductSchema";
-import { useEffect, useState } from "react";
-import { getProducts } from "./actions/userActions/user-products";
-export default function Home() {
-  const [products, setProducts] = useState<IProduct[]>([]);
-  useEffect(() => {
-    async function fetchData() {
-      const res = await getProducts();
-      setProducts(res);
-    }
-    fetchData();
-  }, []);
+import CategoriesGrid from "@/components/user/CategoriesGrid";
+import FooterNav from "@/components/user/FooterNav";
+
+import { getActiveCategories } from "@/lib/category";
+
+export default async function HomePage() {
+  const categories = await getActiveCategories();
 
   return (
     <>
       <Hero />
-      <Products products={products} />
+      <CategoriesGrid categories={categories} />
+      
       <FooterNav />
-      {/* {user?.email} */}
     </>
   );
 }

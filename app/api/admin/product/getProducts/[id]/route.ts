@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import mongoose from "mongoose";
-import dbConnect from "@/lib/mongo";
+import dbConnect from "@/lib/db";
 import Product from "@/models/admin/ProductSchema";
 
 type AdminPayload = { id: string };

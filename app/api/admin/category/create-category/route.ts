@@ -1,38 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from 'jsonwebtoken'
 import connectDB from "@/lib/db";
 import Category from "@/models/admin/Category";
-import { cookies } from "next/headers";
-import { JWTPayload, jwtVerify } from "jose";
-export interface AdminPayload extends JWTPayload {
-    id: string;
-    email: string
-}
+import { jwtVerify } from "jose";
 
 export async function POST(req: NextRequest) {
-    try {
-        await connectDB();
-        const token = await req.cookies.get("adminToken")?.value;
-        if (!token) {
-            return NextResponse.json({ msg: "Unauthorized" }, { status: 401 })
-        }
-        const { name, slug, description, isActive, createdBy } = await req.json();
-        const existingCategory = await Category.findOne({ name });
-        const {payload}=await jwtVerify<AdminPayload>(token,new TextEncoder().encode(process.env.SECRET_KEY));
-        const adminId=payload.id;
-        if (existingCategory) {
-            return NextResponse.json({ msg: "the category already exist" }, { status: 400 });
-        }
-        const response = await Category.create({
-            name,
-            slug,
-            description,
-            isActive,
-            createdBy:adminId
-        })
-        return NextResponse.json({ msg: "category created",response }, { status: 201 });
-    } catch (e: any) {
-        console.log(e.message);
-        return NextResponse.json({ msg: "some error in category creation" }, { status: 500 });
+  try {
+    await connectDB();
+
+    const token = req.cookies.get("adminToken")?.value;
+    if (!token) {
+      return NextResponse.json(
+        { msg: "Unauthorized" },
+        { status: 401 }
+      );
     }
+
+    const { payload }: any = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.SECRET_KEY)
+    );
+
+    const adminId = payload.id;
+
+    const { name, slug, description, isActive, image } =
+      await req.json();
+
+    if (!name || !slug || isActive === undefined) {
+      return NextResponse.json(
+        { msg: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const existingCategory = await Category.findOne({ slug });
+    if (existingCategory) {
+      return NextResponse.json(
+        { msg: "Category already exists" },
+        { status: 400 }
+      );
+    }
+
+    const category = await Category.create({
+      name,
+      slug,
+      description,
+      image,
+      isActive,
+      createdBy: adminId,
+    });
+
+    return NextResponse.json(
+      { msg: "Category created", category },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("CATEGORY ERROR:", error);
+    return NextResponse.json(
+      { msg: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

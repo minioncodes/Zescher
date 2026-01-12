@@ -68,9 +68,9 @@ export default function CheckoutButton({ amount }: { amount: number }) {
       <button
         onClick={handleCheckout}
         disabled={loading}
-        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+        className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-900 transition disabled:opacity-50"
       >
-        {loading ? "Processing..." : `Pay Now`}
+        {loading ? "Processing..." : `Buy Now`}
       </button>
     </>
   );

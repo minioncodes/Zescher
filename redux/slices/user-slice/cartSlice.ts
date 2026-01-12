@@ -7,6 +7,9 @@ type CartItem = {
   price: number;
   images: string[];
   quantity: number;
+  variantSku?: string;
+  color?: string;
+  size?: string;
 };
 
 type CartState = {

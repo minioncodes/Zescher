@@ -16,7 +16,7 @@ const CategorySchema=new mongoose.Schema<ICategory>(
         slug:{type:String,required:true},
         description:{type:String},
         image:{type:String},
-        isActive:{type:Boolean,required:true},
+        isActive:{type:Boolean},
         createdBy : { type: String, ref: "Admin", required: true }
     },
     {timestamps:true}

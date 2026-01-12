@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Missing fields" }, { status: 400 });
     }
 
-    /** 1️⃣ Validate category exists */
+    
     const categoryExists = await Category.findById(category);
     if (!categoryExists) {
       return NextResponse.json(
@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    /** 2️⃣ Check slug uniqueness */
     const slugExists = await Product.findOne({ slug });
     if (slugExists) {
       return NextResponse.json(
@@ -52,7 +51,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    /** 3️⃣ Upload images */
+
     const imageFiles = formData.getAll("images");
     if (imageFiles.length === 0) {
       return NextResponse.json(
@@ -69,7 +68,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    /** 4️⃣ Safe JSON parsing */
+
     let attributes = [];
     let variants = [];
 

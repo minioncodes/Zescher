@@ -45,7 +45,7 @@ const Hero = () => {
             </p>
             <div className="mt-8 flex space-x-4">
               <Link
-                href="#"
+                href="/products"
                 className="px-6 py-3 rounded-xl bg-gray-900 text-white font-semibold shadow hover:bg-gray-800 transition"
               >
                 Shop Now

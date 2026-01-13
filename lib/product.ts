@@ -6,12 +6,12 @@ export async function getAllProducts() {
 
   const products = await Product.find({
     $or: [{ isActive: true }, { isActive: { $exists: false } }],
-  }).lean();
+  })
+    .populate("category", "name slug") 
+    .lean();
 
-  
   return JSON.parse(JSON.stringify(products));
 }
-
 
 export async function getProductBySlug(slug: string) {
   await connectDB();
@@ -19,7 +19,9 @@ export async function getProductBySlug(slug: string) {
   const product = await Product.findOne({
     slug,
     $or: [{ isActive: true }, { isActive: { $exists: false } }],
-  }).lean();
+  })
+    .populate("category", "name slug")
+    .lean();
 
   return product ? JSON.parse(JSON.stringify(product)) : null;
 }

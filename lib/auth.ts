@@ -1,43 +1,19 @@
 import Google from "next-auth/providers/google";
-import Apple from "next-auth/providers/apple";
 import type { NextAuthOptions, Session, User as Customer } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import connectDB from "./db";
 import User from "@/models/User";
-import jwt from 'jsonwebtoken'
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from 'bcrypt'
 
-function generateAppleClientSecret() {
-    const now = Math.floor(Date.now() / 1000);
-    const privateKey = process.env.APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-    if (!privateKey?.includes("BEGIN PRIVATE KEY")) {
-        throw new Error("invalid Apple private key: check your .env formatting");
-    }
-    return jwt.sign(
-        {
-            iss: process.env.APPLE_TEAM_ID!,
-            iat: now,
-            exp: now + 60 * 60 * 24,
-            aud: "https://appleid.apple.com",
-            sub: process.env.APPLE_CLIENT_ID!,
-        },
-        privateKey,
-        {
-            keyid: process.env.APPLE_KEY_ID!,
-        }
-    );
-}
+
 export const NEXT_AUTH_CONFIG: NextAuthOptions = {
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
         }),
-        Apple({
-            clientId: process.env.APPLE_CLIENT_ID!,
-            clientSecret: generateAppleClientSecret()
-        }),
+        
         Credentials({
             name: "Credentials",
             credentials: {

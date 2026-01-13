@@ -1,11 +1,11 @@
 "use client";
 
 import { useDispatch } from "react-redux";
-import { addToCart } from "@/redux/slices/user-slice/cartSlice";
+
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
-import CheckoutButton from "../checkout/CheckoutButton";
+
 import ProductActions from "./ProductActions";
 
 export default function ProductsList({ products = [] }: { products?: any[] }) {

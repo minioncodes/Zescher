@@ -41,7 +41,7 @@ export default function ProductActions({ product }: { product: any }) {
         Add to Cart
       </button>
 
-      {/* BUY NOW */}
+     
       {product.stock > 0 && (
         <div className="w-full sm:w-auto">
           <CheckoutButton amount={product.price} />

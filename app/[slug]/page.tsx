@@ -32,7 +32,7 @@ export default async function ProductDetail({ params }: PageProps) {
           </div>
           <div className="text-sm text-gray-600">
             <span className="font-medium">Category:</span>{" "}
-            {product.category}
+            {product.category.name}
           </div>
 
           <div className="flex items-center gap-2">

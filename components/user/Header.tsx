@@ -7,6 +7,8 @@ import { useSession, signOut } from "next-auth/react";
 import type { Session } from "next-auth";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { useAuthModal } from "@/context/AuthModalContext";
+
 import {
   FiShoppingCart,
   FiMenu,
@@ -38,6 +40,7 @@ function getInitials(name?: string | null, phone?: string | null): string {
 }
 
 export default function Header() {
+  const { openAuth } = useAuthModal();
   const { data: session } = useSession();
   const user = session?.user as AppUser | undefined;
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -176,12 +179,14 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <Link
-                href="/auth"
-                className="hidden md:flex p-2 rounded-full hover:bg-black/5"
-              >
-                <FiUser size={20} />
-              </Link>
+              <button
+              title="Auth"
+  onClick={() => openAuth()}
+  className="hidden md:flex p-2 rounded-full hover:bg-black/5"
+>
+  <FiUser size={20} />
+</button>
+
             )}
 
 

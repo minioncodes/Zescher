@@ -1,18 +1,28 @@
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import User from "@/models/User";
+import Address from "@/models/Address";
+import jwt from "jsonwebtoken";
 
-export async function GET(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+export async function GET(req: Request) {
+  try {
+    await connectDB();
 
-  if (!token?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const userId = decoded.userId;
+
+    const addresses = await Address.find({ userId }).sort({
+      isDefault: -1,
+      createdAt: -1,
+    });
+
+    return NextResponse.json(addresses);
+  } catch (error) {
+    console.error("GET ADDRESSES ERROR:", error);
+    return NextResponse.json({ error: "Failed to fetch addresses" }, { status: 500 });
   }
-  await connectDB();
-  const user = await User.findById(token.id);
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-  return NextResponse.json({ user });
 }

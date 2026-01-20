@@ -14,6 +14,7 @@ import {
   FiMapPin,
   FiLogOut,
 } from "react-icons/fi";
+import { useAuthModal } from "@/context/AuthModalContext";
 
 type AppUser = Session["user"] & {
   phoneNumber?: string | null;
@@ -35,7 +36,7 @@ function getInitials(name?: string | null, phone?: string | null): string {
 export default function FooterNav() {
   const { data: session } = useSession();
   const user = session?.user as AppUser | undefined;
-
+  const { openAuth } = useAuthModal();
   const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
 
   return (
@@ -88,12 +89,14 @@ export default function FooterNav() {
               )}
             </button>
           ) : (
-            <Link
-              href="/auth"
-              className="p-2 rounded-full text-gray-600 hover:text-black"
-            >
-              <FiUser size={22} />
-            </Link>
+<button
+  title="Auth"
+  onClick={() => openAuth()}
+  className="flex flex-col items-center text-gray-600 hover:text-black"
+>
+  <FiUser size={22} />
+</button>
+
           )}
 
           {/* USER DROPDOWN */}

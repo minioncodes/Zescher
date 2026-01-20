@@ -3,8 +3,8 @@ import connectDB from "@/lib/db";
 import OrderSchema from "@/models/OrderSchema";
 import axios from "axios";
 import User from "@/models/User";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 async function getShiprocketToken() {
   const { data } = await axios.post("https://apiv2.shiprocket.in/v1/external/auth/login", {

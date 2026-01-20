@@ -1,9 +1,9 @@
 "use server";
 import { IUserPlain } from "@/types/user_types";
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import connectDB from "@/lib/db"
 import User, { IUser } from "@/models/User"
+import { authOptions } from "@/lib/auth";
 export async function getUserId() {
     const session = await getServerSession(authOptions);
     if (!session?.user) {

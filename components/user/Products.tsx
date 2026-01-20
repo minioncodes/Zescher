@@ -10,7 +10,7 @@ import { useBuyNow } from "./useBuyNow";
 export default function ProductsList({ products = [] }: { products?: any[] }) {
   const dispatch = useDispatch();
   const { buyNow } = useBuyNow();
-
+  
 
   return (
     <div className="px-4 sm:px-6 max-w-7xl mx-auto mt-6">
@@ -97,12 +97,12 @@ export default function ProductsList({ products = [] }: { products?: any[] }) {
 </button>
 
 {product.stock > 0 && (
-  <button
-    onClick={() => buyNow(product._id)}
-    className="flex-1 px-4 py-2.5 text-sm rounded-lg font-semibold bg-black text-white hover:bg-black/90"
-  >
-    Buy Now
-  </button>
+<button
+  onClick={() => buyNow(product._id)}
+  className="flex-1 px-4 py-2.5 text-sm rounded-lg font-semibold bg-black text-white hover:bg-black/90"
+>
+  Buy Now
+</button>
 )}
     </div>
           </div>

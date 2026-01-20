@@ -21,10 +21,11 @@ import {
   FiX,
 } from "react-icons/fi";
 import CreateCategory from "@/components/admin/CreateCategory";
+import AdminOrders from "@/components/admin/AdminOrders";
 
 const DashboardHome = () => <div>Welcome to Dashboard</div>;
 
-const OrdersAll = () => <div>Total Orders</div>;
+
 const OrdersCanceled = () => <div>Canceled Orders</div>;
 const OrdersDelivered = () => <div>Delivered Orders</div>;
 const Users = () => <div>Users List</div>;
@@ -36,7 +37,7 @@ type Page =
   | "addProduct"
   | "editProduct"
   | "deleteProduct"
-  | "ordersAll"
+  | "orders"
   | "ordersCanceled"
   | "ordersDelivered"
   | "users"
@@ -77,8 +78,8 @@ export default function Dashboard() {
         return <EditProduct />;
       case "deleteProduct":
         return <DeleteProduct />;
-      case "ordersAll":
-        return <OrdersAll />;
+      case "orders":
+        return <AdminOrders />;
       case "ordersCanceled":
         return <OrdersCanceled />;
       case "ordersDelivered":
@@ -233,9 +234,9 @@ export default function Dashboard() {
               className={`${openOrders ? "block" : "hidden"} mt-2 ml-9 flex flex-col gap-1`}
             >
               <button
-                onClick={() => navigate("ordersAll")}
+                onClick={() => navigate("orders")}
                 className={`${itemBase} ${
-                  activePage === "ordersAll" ? active : inactive
+                  activePage === "orders" ? active : inactive
                 }`}
               >
                 <FiList /> Total Orders

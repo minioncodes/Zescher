@@ -17,13 +17,13 @@ export async function PATCH(req: Request) {
 
   await connectDB();
 
-  // Remove default from all
+
   await Address.updateMany(
     { userId: session.user.id },
     { isDefault: false }
   );
 
-  // Set selected as default
+ 
   await Address.updateOne(
     { _id: id, userId: session.user.id },
     { isDefault: true }

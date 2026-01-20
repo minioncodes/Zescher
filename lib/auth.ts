@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt'
 
 export const NEXT_AUTH_CONFIG: NextAuthOptions = {
     providers: [
-        Google({
+        Google({ 
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
         }),

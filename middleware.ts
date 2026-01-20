@@ -3,12 +3,12 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const ADMIN_PUBLIC = ["/admin/login"]; // add forgot-password, etc. if needed
+const ADMIN_PUBLIC = ["/admin/sigin"]; // add forgot-password, etc. if needed
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
-  // Only guard /admin pages (not APIs or assets)
+  // Only guard /admin pages (not APIs or assets)   
   if (!pathname.startsWith("/admin")) return NextResponse.next();
   if (ADMIN_PUBLIC.includes(pathname)) return NextResponse.next();
 
@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
   // No token → redirect to login with return URL
   if (!token) {
     const url = req.nextUrl.clone();
-    url.pathname = "/admin/login";
+    url.pathname = "/admin/signin";
     url.searchParams.set("next", pathname + search);
     return NextResponse.redirect(url);
   }
@@ -29,12 +29,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   } catch {
     const url = req.nextUrl.clone();
-    url.pathname = "/admin/login";
+    url.pathname = "/admin/signin";
     url.searchParams.set("next", pathname + search);
     return NextResponse.redirect(url);
   }
 }
 
 export const config = {
-  matcher: ["/admin/dashboard/:path*"], // pages under /admin
+  matcher: ["/admin/dashboard/:path*"],
 };

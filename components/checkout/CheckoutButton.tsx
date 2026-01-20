@@ -53,6 +53,11 @@ export default function CheckoutButton({ amount }: { amount: number }) {
 
       // @ts-ignore
       const rzp = new window.Razorpay(options);
+      if (!(window as any).Razorpay) {
+  alert("Payment system not loaded. Please refresh.");
+  return;
+}
+
       rzp.open();
     } catch (err) {
       console.error(err);

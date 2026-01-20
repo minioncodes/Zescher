@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { FiCheckCircle } from "react-icons/fi";
+import { useSession } from "next-auth/react";
+import { useAuthModal } from "@/context/AuthModalContext";
+import { loadRazorpay } from "@/lib/razorpay";
 
 type Address = {
   _id: string;
   name: string;
   phone: string;
-  address: string;
-  locality: string;
+  addressLine: string;
   city: string;
   state: string;
   pincode: string;
@@ -19,173 +18,200 @@ type Address = {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { status } = useSession();
+  const { openAuthModal } = useAuthModal();
 
-  const [step, setStep] = useState<1 | 2>(1);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
-  const [placingOrder, setPlacingOrder] = useState(false);
+  const [paymentMethod, setPaymentMethod] =
+    useState<"COD" | "ONLINE" | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const totalAmount = cartItems.reduce(
-    (sum, i) => sum + i.price * i.quantity,
-    0
-  );
+  const [productId, setProductId] = useState<string | null>(null);
 
+  /* 🔐 Force login */
   useEffect(() => {
-    if (cartItems.length === 0) {
-      router.push("/cart");
+    if (status === "unauthenticated") {
+      openAuthModal(() => router.replace("/checkout"));
     }
-  }, [cartItems, router]);
+  }, [status, openAuthModal, router]);
 
+  /* 🧠 Load product safely */
   useEffect(() => {
-    fetch("/api/user/addresses")
-      .then((res) => res.json())
-      .then((data) => setAddresses(data || []));
-  }, []);
+    const stored = localStorage.getItem("buy_now_product");
+    if (!stored) {
+      router.replace("/");
+      return;
+    }
 
+    try {
+      const parsed = JSON.parse(stored);
+      setProductId(parsed._id ?? parsed); // supports object or id
+    } catch {
+      router.replace("/");
+    }
+  }, [router]);
+
+  /* 📦 Fetch addresses */
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetch("/api/user/addresses")
+        .then(res => res.json())
+        .then(data => setAddresses(data || []));
+    }
+  }, [status]);
+
+  /* 🧾 Place Order */
   const placeOrder = async () => {
-    if (!selectedAddress) return;
+    if (!selectedAddress || !paymentMethod || !productId) return;
 
-    setPlacingOrder(true);
+    setLoading(true);
 
-    // Placeholder – integrate payment / order API here
-    setTimeout(() => {
-      router.push("/orders");
-    }, 1200);
+    try {
+      const res = await fetch("/api/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product: productId, // ✅ ONLY ID
+          addressId: selectedAddress,
+          paymentMethod,
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Order creation failed");
+      }
+
+      const order = await res.json();
+
+      /* 💵 COD */
+      if (paymentMethod === "COD") {
+        localStorage.removeItem("buy_now_product");
+        router.push("/orders");
+        return;
+      }
+
+      /* 💳 Online Payment */
+      const loaded = await loadRazorpay();
+      if (!loaded) {
+        alert("Failed to load Razorpay. Please try again.");
+        return;
+      }
+
+      const paymentRes = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order._id,
+          amount: order.amount,
+        }),
+      });
+
+      const paymentData = await paymentRes.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+        amount: paymentData.amount,
+        currency: "INR",
+        order_id: paymentData.id,
+
+        handler: async (response: any) => {
+          await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...response,
+              orderId: order._id,
+            }),
+          });
+
+          localStorage.removeItem("buy_now_product");
+          router.push("/orders");
+        },
+
+        modal: {
+          ondismiss: async () => {
+            await fetch("/api/payment/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: order._id,
+                failed: true,
+              }),
+            });
+
+            router.push("/orders");
+          },
+        },
+      };
+
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-semibold mb-8">Checkout</h1>
+    <div className="max-w-4xl mx-auto p-4 space-y-6">
+      <h1 className="text-2xl font-semibold">Checkout</h1>
 
-      {/* STEP INDICATOR */}
-      <div className="flex items-center gap-6 mb-10 text-sm">
-        <div className={`flex items-center gap-2 ${step >= 1 ? "text-black" : "text-black/40"}`}>
-          <FiCheckCircle /> Shipping
-        </div>
-        <div className={`flex items-center gap-2 ${step === 2 ? "text-black" : "text-black/40"}`}>
-          <FiCheckCircle /> Payment
-        </div>
+      {/* ADDRESS */}
+      <div>
+        <h2 className="font-medium mb-2">Select Address</h2>
+        {addresses.map(addr => (
+          <label
+            key={addr._id}
+            className={`block border p-3 mb-2 cursor-pointer ${
+              selectedAddress === addr._id ? "border-black" : ""
+            }`}
+          >
+            <input
+              type="radio"
+              name="address"
+              className="mr-2"
+              onChange={() => setSelectedAddress(addr._id)}
+            />
+            {addr.addressLine}, {addr.city} - {addr.pincode}
+          </label>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-
-        {/* LEFT */}
-        <div className="md:col-span-2 space-y-8">
-
-          {/* STEP 1: ADDRESS */}
-          {step === 1 && (
-            <section className="border rounded-xl p-6">
-              <h2 className="text-lg font-medium mb-4">
-                Select Delivery Address
-              </h2>
-
-              <div className="space-y-4">
-                {addresses.map((addr) => (
-                  <label
-                    key={addr._id}
-                    className={`block border rounded-lg p-4 cursor-pointer ${
-                      selectedAddress === addr._id
-                        ? "border-black"
-                        : "border-black/10"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="address"
-                      checked={selectedAddress === addr._id}
-                      onChange={() => setSelectedAddress(addr._id)}
-                      className="mr-3"
-                    />
-                    <span className="font-medium">{addr.name}</span>
-                    <p className="text-sm text-black/60 mt-1">
-                      {addr.address}, {addr.locality}, {addr.city},{" "}
-                      {addr.state} – {addr.pincode}
-                    </p>
-                    <p className="text-sm mt-1">Phone: {addr.phone}</p>
-                  </label>
-                ))}
-              </div>
-
-              <button
-                disabled={!selectedAddress}
-                onClick={() => setStep(2)}
-                className="mt-6 px-6 py-3 bg-black text-white rounded-xl disabled:opacity-50"
-              >
-                Continue to Payment
-              </button>
-            </section>
-          )}
-
-          {/* STEP 2: PAYMENT */}
-          {step === 2 && (
-            <section className="border rounded-xl p-6">
-              <h2 className="text-lg font-medium mb-4">
-                Payment Method
-              </h2>
-
-              <div className="space-y-4">
-                <label className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    checked={paymentMethod === "cod"}
-                    onChange={() => setPaymentMethod("cod")}
-                  />
-                  Cash on Delivery
-                </label>
-
-                <label className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    checked={paymentMethod === "online"}
-                    onChange={() => setPaymentMethod("online")}
-                  />
-                  Online Payment (UPI / Card)
-                </label>
-              </div>
-
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={() => setStep(1)}
-                  className="px-6 py-3 border rounded-xl"
-                >
-                  Back
-                </button>
-
-                <button
-                  disabled={placingOrder}
-                  onClick={placeOrder}
-                  className="px-6 py-3 bg-black text-white rounded-xl"
-                >
-                  {placingOrder ? "Placing Order…" : "Place Order"}
-                </button>
-              </div>
-            </section>
-          )}
-        </div>
-
-        {/* RIGHT – ORDER SUMMARY */}
-        <aside className="border rounded-xl p-6 h-fit">
-          <h3 className="text-lg font-medium mb-4">Order Summary</h3>
-
-          <div className="space-y-3 text-sm">
-            {cartItems.map((item) => (
-              <div key={item._id} className="flex justify-between">
-                <span>
-                  {item.name} × {item.quantity}
-                </span>
-                <span>₹{item.price * item.quantity}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t mt-4 pt-4 flex justify-between font-medium">
-            <span>Total</span>
-            <span>₹{totalAmount}</span>
-          </div>
-        </aside>
+      {/* PAYMENT */}
+      <div>
+        <h2 className="font-medium mb-2">Payment Method</h2>
+        <label className="block">
+          <input
+            type="radio"
+            name="payment"
+            className="mr-2"
+            onChange={() => setPaymentMethod("COD")}
+          />
+          Cash on Delivery
+        </label>
+        <label className="block">
+          <input
+            type="radio"
+            name="payment"
+            className="mr-2"
+            onChange={() => setPaymentMethod("ONLINE")}
+          />
+          Online Payment
+        </label>
       </div>
+
+      {/* CTA */}
+      <button
+        disabled={!selectedAddress || !paymentMethod || loading}
+        onClick={placeOrder}
+        className="w-full bg-black text-white py-3 disabled:opacity-50"
+      >
+        {paymentMethod === "COD" ? "Place Order" : "Pay Now"}
+      </button>
     </div>
   );
 }

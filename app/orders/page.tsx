@@ -2,54 +2,69 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   FiPackage,
   FiTruck,
   FiCheckCircle,
   FiClock,
 } from "react-icons/fi";
+import Image from "next/image";
+
+/* =====================
+   TYPES
+===================== */
 
 type OrderItem = {
   productId: string;
   name: string;
-  quantity: number;
+  qty: number;
   price: number;
 };
 
 type Order = {
   _id: string;
-  orderNumber: string;
   createdAt: string;
-  status:
-    | "placed"
-    | "confirmed"
-    | "shipped"
-    | "out_for_delivery"
-    | "delivered"
-    | "cancelled";
-  totalAmount: number;
+  orderStatus:
+    | "PENDING"
+    | "CONFIRMED"
+    | "SHIPPED"
+    | "DELIVERED"
+    | "CANCELLED";
+  paymentMode: "COD" | "PREPAID";
   items: OrderItem[];
+  delhivery?: {
+    waybill?: string;
+    trackingUrl?: string;
+    status?: string;
+  };
 };
 
-const STATUS_LABEL: Record<Order["status"], string> = {
-  placed: "Order Placed",
-  confirmed: "Confirmed",
-  shipped: "Shipped",
-  out_for_delivery: "Out for delivery",
-  delivered: "Delivered",
-  cancelled: "Cancelled",
+const STATUS_LABEL: Record<Order["orderStatus"], string> = {
+  PENDING: "Payment Pending",
+  CONFIRMED: "Order Confirmed",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
 };
 
 export default function OrdersPage() {
+  const { status } = useSession();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // ✅ DO NOT fetch until user explicitly visits orders
+    if (status !== "authenticated") {
+      setLoading(false);
+      return;
+    }
+
     fetch("/api/user/orders")
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => setOrders(data || []))
       .finally(() => setLoading(false));
-  }, []);
+  }, [status]);
 
   if (loading) {
     return (
@@ -84,7 +99,6 @@ export default function OrdersPage() {
     <div className="max-w-5xl mx-auto px-6 py-10">
       <h1 className="text-2xl font-semibold mb-8">My Orders</h1>
 
-      {/* RECENT ORDERS */}
       <section className="mb-10">
         <h2 className="text-lg font-medium mb-4">Recent Orders</h2>
         <div className="space-y-4">
@@ -94,7 +108,6 @@ export default function OrdersPage() {
         </div>
       </section>
 
-      {/* ORDER HISTORY */}
       {pastOrders.length > 0 && (
         <section>
           <h2 className="text-lg font-medium mb-4">Order History</h2>
@@ -109,67 +122,77 @@ export default function OrdersPage() {
   );
 }
 
-/* ----------------------------
+/* =====================
    ORDER CARD
------------------------------ */
-function OrderCard({ order }: { order: Order }) {
+===================== */
+
+function OrderCard({ order }: { order: any }) {
+  const totalAmount = order.amount;
+
   return (
-    <div className="border border-black/10 rounded-xl p-5 bg-white">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <p className="text-sm text-black/60">
-            Order #{order.orderNumber}
-          </p>
-          <p className="text-sm text-black/60">
-            Placed on {new Date(order.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-
-        <div className="text-sm font-medium">
-          ₹{order.totalAmount.toFixed(2)}
-        </div>
+    <div className="border p-4 rounded space-y-2">
+      <div className="flex justify-between">
+        <span className="font-medium">
+          Order #{order.orderId ?? order._id.slice(-6)}
+        </span>
+        <span className="text-sm text-gray-500">
+          {new Date(order.createdAt).toLocaleDateString()}
+        </span>
       </div>
 
-      {/* STATUS */}
-      <div className="mt-4 flex items-center gap-2 text-sm">
-        <StatusIcon status={order.status} />
-        <span>{STATUS_LABEL[order.status]}</span>
-      </div>
+      {/* Product */}
+      {order.product && (
+        <div className="flex gap-3 items-center">
+<Image
+  src={order.product.images?.[0] || "/placeholder.png"}
+  alt={order.product.name}
+  width={64}
+  height={64}
+  className="object-cover rounded"
+  unoptimized
+/>
 
-      {/* ITEMS */}
-      <div className="mt-4 text-sm text-black/70">
-        {order.items.map((item) => (
-          <div key={item.productId} className="flex justify-between">
-            <span>
-              {item.name} × {item.quantity}
-            </span>
-            <span>₹{item.price * item.quantity}</span>
+          <div>
+            <p className="font-medium">{order.product.name}</p>
+            <p className="text-sm text-gray-600">₹{order.amount}</p>
           </div>
-        ))}
+        </div>
+      )}
+
+      {/* Status */}
+      <div className="flex justify-between items-center">
+        <span className="text-sm">
+          Payment:{" "}
+          <strong
+            className={
+              order.paymentStatus === "PAID"
+                ? "text-green-600"
+                : order.paymentStatus === "FAILED"
+                ? "text-red-600"
+                : "text-yellow-600"
+            }
+          >
+            {order.paymentStatus}
+          </strong>
+        </span>
+
+        <span className="font-semibold">₹{totalAmount}</span>
       </div>
 
-      {/* ACTIONS */}
-      <div className="mt-5 flex gap-4">
-        <Link
-          href={`/orders/${order._id}`}
-          className="text-sm font-medium text-blue-600"
-        >
-          Track Order
-        </Link>
-      </div>
+      {/* Retry */}
+      {order.paymentStatus === "FAILED" && (
+        <button className="text-sm text-blue-600 underline">
+          Retry Payment
+        </button>
+      )}
     </div>
   );
 }
 
-/* ----------------------------
-   STATUS ICON
------------------------------ */
-function StatusIcon({ status }: { status: Order["status"] }) {
-  if (status === "delivered") {
-    return <FiCheckCircle className="text-green-600" />;
-  }
-  if (status === "shipped" || status === "out_for_delivery") {
-    return <FiTruck className="text-blue-600" />;
-  }
+
+function StatusIcon({ status }: { status: Order["orderStatus"] }) {
+  if (status === "DELIVERED") return <FiCheckCircle className="text-green-600" />;
+  if (status === "SHIPPED") return <FiTruck className="text-blue-600" />;
+  if (status === "CANCELLED") return <FiPackage className="text-red-600" />;
   return <FiClock className="text-black/50" />;
 }

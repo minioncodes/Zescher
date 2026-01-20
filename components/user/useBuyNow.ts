@@ -2,25 +2,24 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAuthModal } from "@/context/AuthModalContext";
 
-export function useBuyNow() {
-  const { status } = useSession();
+export const useBuyNow = () => {
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const { openAuthModal } = useAuthModal();
 
-  function buyNow(productId: string) {
-    if (status !== "authenticated") {
-      // Save redirect target
-      sessionStorage.setItem("postAuthRedirect", "/checkout");
-      sessionStorage.setItem("buyNowProduct", productId);
+const buyNow = (product: any) => {
+  localStorage.setItem("buy_now_product", JSON.stringify(product));
 
-      // Open auth modal
-      router.push("/auth?modal=true");
-      return;
-    }
-
-    // Already logged in → go checkout
-    router.push("/checkout");
+  if (status !== "authenticated") {
+    openAuthModal(() => router.push("/checkout"));
+    return;
   }
 
+  router.push("/checkout");
+};
+
+
   return { buyNow };
-}
+};

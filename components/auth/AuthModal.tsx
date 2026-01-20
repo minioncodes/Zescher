@@ -1,23 +1,37 @@
+"use client";
+
 import { useAuthModal } from "@/context/AuthModalContext";
 import { signIn } from "next-auth/react";
 
 export default function AuthModal() {
-  const { isOpen, closeAuthModal, onSuccess } = useAuthModal();
+  const { isOpen, closeAuthModal } = useAuthModal();
 
   if (!isOpen) return null;
 
-  const handleSuccess = async () => {
-    await signIn(); // OTP / Credentials handled internally
-    closeAuthModal();
-    onSuccess?.(); // 🔥 redirect callback
-  };
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-      <div className="bg-white p-6 w-full max-w-md">
-        {/* Your auth form here */}
-        <button onClick={handleSuccess} className="w-full bg-black text-white p-2">
-          Continue
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={closeAuthModal}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-white w-full max-w-md rounded-xl p-6 z-10">
+        <h2 className="text-xl font-semibold mb-4">Login / Signup</h2>
+
+        <button
+          onClick={() => signIn("google")}
+          className="w-full bg-black text-white py-3 rounded mb-3"
+        >
+          Continue with Google
+        </button>
+
+        <button
+          onClick={closeAuthModal}
+          className="w-full border py-3 rounded"
+        >
+          Cancel
         </button>
       </div>
     </div>

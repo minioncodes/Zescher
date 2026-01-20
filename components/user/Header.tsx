@@ -40,7 +40,7 @@ function getInitials(name?: string | null, phone?: string | null): string {
 }
 
 export default function Header() {
-  const { openAuth } = useAuthModal();
+  const { openAuthModal  } = useAuthModal();
   const { data: session } = useSession();
   const user = session?.user as AppUser | undefined;
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -181,7 +181,7 @@ export default function Header() {
             ) : (
               <button
               title="Auth"
-  onClick={() => openAuth()}
+  onClick={() => openAuthModal ()}
   className="hidden md:flex p-2 rounded-full hover:bg-black/5"
 >
   <FiUser size={20} />

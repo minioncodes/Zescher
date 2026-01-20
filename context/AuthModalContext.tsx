@@ -4,42 +4,40 @@ import { createContext, useContext, useState } from "react";
 
 type AuthContextType = {
   isOpen: boolean;
-  openAuthModal: (onSuccess?: () => void) => void;
+  redirectTo: string | null;
+  openAuthModal: (redirectTo?: string) => void;
   closeAuthModal: () => void;
-  onSuccess?: () => void;
 };
 
 const AuthModalContext = createContext<AuthContextType | null>(null);
 
-export const AuthModalProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export function AuthModalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [onSuccess, setOnSuccess] = useState<(() => void) | undefined>();
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
-  const openAuthModal = (callback?: () => void) => {
-    setOnSuccess(() => callback);
+  const openAuthModal = (redirect?: string) => {
+    if (redirect) setRedirectTo(redirect);
     setIsOpen(true);
   };
 
   const closeAuthModal = () => {
     setIsOpen(false);
-    setOnSuccess(undefined);
+    setRedirectTo(null);
   };
 
   return (
     <AuthModalContext.Provider
-      value={{ isOpen, openAuthModal, closeAuthModal, onSuccess }}
+      value={{ isOpen, redirectTo, openAuthModal, closeAuthModal }}
     >
       {children}
     </AuthModalContext.Provider>
   );
-};
+}
 
-export const useAuthModal = () => {
+export function useAuthModal() {
   const ctx = useContext(AuthModalContext);
-  if (!ctx) throw new Error("useAuthModal must be used inside provider");
+  if (!ctx) {
+    throw new Error("useAuthModal must be used within AuthModalProvider");
+  }
   return ctx;
-};
+}

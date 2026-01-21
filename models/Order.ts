@@ -18,6 +18,9 @@ const OrderSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
+    razorpayOrderId: {
+  type: String,
+},
 
     address: {
       type: mongoose.Schema.Types.ObjectId,

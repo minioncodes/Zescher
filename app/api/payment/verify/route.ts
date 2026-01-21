@@ -4,65 +4,50 @@ import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 
 export async function POST(req: Request) {
-  try {
-    await connectDB();
+  await connectDB();
 
-    const body = await req.json();
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      orderId,
-      failed,
-    } = body;
+  const body = await req.json();
 
-    // 🔴 User closed modal / payment failed
-    if (failed) {
-      await Order.findByIdAndUpdate(orderId, {
-        paymentStatus: "FAILED",
-      });
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    orderId,     // DB order id
+    failed,
+  } = body;
 
-      return NextResponse.json({ status: "FAILED" });
-    }
+  const order = await Order.findById(orderId);
+  if (!order) {
+    return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
 
-    // 🔴 If success payload is incomplete → mark FAILED (not 400)
-    if (
-      !razorpay_order_id ||
-      !razorpay_payment_id ||
-      !razorpay_signature
-    ) {
-      await Order.findByIdAndUpdate(orderId, {
-        paymentStatus: "FAILED",
-      });
-
-      return NextResponse.json({ status: "FAILED" });
-    }
-
-    // 🔐 Verify signature
-    const generatedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-
-    if (generatedSignature !== razorpay_signature) {
-      await Order.findByIdAndUpdate(orderId, {
-        paymentStatus: "FAILED",
-      });
-
-      return NextResponse.json({ status: "FAILED" });
-    }
-
-    // ✅ Payment verified
+  /* 🔴 USER CLOSED MODAL */
+  if (failed) {
     await Order.findByIdAndUpdate(orderId, {
-      paymentStatus: "PAID",
+      paymentStatus: "FAILED",
     });
+    return NextResponse.json({ status: "FAILED" });
+  }
 
-    return NextResponse.json({ status: "PAID" });
-  } catch (err: any) {
-    console.error("PAYMENT VERIFY ERROR:", err);
+  /* ✅ SUCCESS PATH ONLY */
+  const generatedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest("hex");
+
+  if (generatedSignature !== razorpay_signature) {
     return NextResponse.json(
-      { error: "Payment verification failed" },
-      { status: 500 }
+      { error: "Signature mismatch" },
+      { status: 400 }
     );
   }
+
+  /* ✅ FINAL SUCCESS */
+  await Order.findByIdAndUpdate(orderId, {
+    paymentStatus: "PAID",
+    razorpayOrderId: razorpay_order_id,
+    razorpayPaymentId: razorpay_payment_id,
+  });
+
+  return NextResponse.json({ status: "PAID" });
 }

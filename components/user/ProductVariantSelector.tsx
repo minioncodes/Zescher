@@ -4,12 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/slices/user-slice/cartSlice";
-import CheckoutButton from "@/components/checkout/CheckoutButton";
+import { useBuyNow } from "./useBuyNow";
 
 export default function ProductVariantSelector({ product }: { product: any }) {
   const dispatch = useDispatch();
+  const { buyNow } = useBuyNow();
 
-  // default selections
   const [selectedImage, setSelectedImage] = useState(
     product.images?.[0]
   );
@@ -17,14 +17,13 @@ export default function ProductVariantSelector({ product }: { product: any }) {
     product.variants?.[0] || null
   );
 
-  const price = selectedVariant?.price || product.price;
-  const stock =
-    selectedVariant?.stock ?? product.stock;
+  const price = selectedVariant?.price ?? product.price;
+  const stock = selectedVariant?.stock ?? product.stock;
 
-  return (  
+  return (
     <div className="space-y-6">
-     
-      <div className="bg-white rounded-lg shadow-lg ">
+      {/* IMAGE */}
+      <div className="bg-white rounded-lg shadow-lg">
         <div className="relative w-full h-[620px]">
           <Image
             src={selectedImage || "/placeholder.png"}
@@ -34,9 +33,8 @@ export default function ProductVariantSelector({ product }: { product: any }) {
           />
         </div>
 
-  
         {product.images?.length > 1 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto">
+          <div className="flex gap-2 mt-3 overflow-x-auto p-2">
             {product.images.map((img: string, i: number) => (
               <button
                 key={i}
@@ -47,26 +45,21 @@ export default function ProductVariantSelector({ product }: { product: any }) {
                     : "border-gray-300"
                 }`}
               >
-                <Image
-                  src={img}
-                  alt=""
-                  width={60}
-                  height={60}
-                  className="object-contain"
-                />
+                <Image src={img} alt="" width={60} height={60} />
               </button>
             ))}
           </div>
         )}
       </div>
 
+      {/* VARIANTS */}
       {product.variants?.length > 0 && (
         <div>
           <h3 className="font-semibold mb-2">Select Variant</h3>
           <div className="flex flex-wrap gap-2">
-            {product.variants.map((v: any, i: number) => (
+            {product.variants.map((v: any) => (
               <button
-                key={i}
+                key={v.sku}
                 disabled={v.stock === 0}
                 onClick={() => {
                   setSelectedVariant(v);
@@ -76,21 +69,16 @@ export default function ProductVariantSelector({ product }: { product: any }) {
                   selectedVariant?.sku === v.sku
                     ? "border-green-600 bg-green-50"
                     : "border-gray-300"
-                } ${
-                  v.stock === 0
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+                } ${v.stock === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                {v.color && <span>{v.color}</span>}
-                {v.size && <span> / {v.size}</span>}
+                {v.color} {v.size && ` / ${v.size}`}
               </button>
             ))}
           </div>
         </div>
       )}
 
-    
+      {/* PRICE */}
       <div className="text-2xl font-bold text-green-600">
         ₹{price}
       </div>
@@ -103,7 +91,7 @@ export default function ProductVariantSelector({ product }: { product: any }) {
         {stock > 0 ? "In Stock" : "Out of Stock"}
       </div>
 
-    
+      {/* ACTIONS */}
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           disabled={stock === 0}
@@ -131,7 +119,12 @@ export default function ProductVariantSelector({ product }: { product: any }) {
         </button>
 
         {stock > 0 && (
-          <CheckoutButton amount={price} />
+          <button
+            onClick={() => buyNow(product._id)}
+            className="w-full sm:w-auto px-6 py-3 rounded-lg font-semibold bg-black text-white hover:bg-black/90"
+          >
+            Buy Now
+          </button>
         )}
       </div>
     </div>

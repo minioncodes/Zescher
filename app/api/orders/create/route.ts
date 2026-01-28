@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     }
 
 const order = await Order.create({
-  userId: dbUser._id, // ✅ UUID string
+  userId: dbUser._id, 
   product: dbProduct._id,
   address: addressId,
   amount: dbProduct.price,

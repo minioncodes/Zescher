@@ -1,6 +1,6 @@
 // app/api/webhooks/delhivery/route.ts
 import connectDB from "@/lib/db";
-import OrderSchema from "@/models/OrderSchema";
+import Order from "@/models/Order";
 
 export async function POST(req: Request) {
   await connectDB();

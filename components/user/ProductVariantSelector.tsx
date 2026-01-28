@@ -37,6 +37,7 @@ export default function ProductVariantSelector({ product }: { product: any }) {
           <div className="flex gap-2 mt-3 overflow-x-auto p-2">
             {product.images.map((img: string, i: number) => (
               <button
+              title="Image"
                 key={i}
                 onClick={() => setSelectedImage(img)}
                 className={`border rounded p-1 ${

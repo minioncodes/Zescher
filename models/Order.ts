@@ -26,6 +26,12 @@ const OrderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
       required: true,
+      name: String,
+      phone: String,
+      address: String,
+      city: String,
+      state: String,
+      pincode: String
     },
 
     amount: {

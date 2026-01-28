@@ -127,65 +127,74 @@ export default function OrdersPage() {
 ===================== */
 
 function OrderCard({ order }: { order: any }) {
-  const totalAmount = order.amount;
+  const product = order.product;
+  const delivered =
+    order.orderStatus === "DELIVERED";
 
   return (
-    <div className="border p-4 rounded space-y-2">
-      <div className="flex justify-between">
-        <span className="font-medium">
-          Order #{order.orderId ?? order._id.slice(-6)}
-        </span>
-        <span className="text-sm text-gray-500">
-          {new Date(order.createdAt).toLocaleDateString()}
-        </span>
-      </div>
+    <Link
+      href={`/orders/${order._id}`}
+      className="block border rounded-lg bg-white hover:shadow transition"
+    >
+      <div className="flex items-center gap-4 p-4">
+        {/* PRODUCT IMAGE */}
+        <Image
+          src={product?.images?.[0] || "/placeholder.png"}
+          alt={product?.name}
+          width={72}
+          height={72}
+          className="rounded object-cover"
+        />
 
-      {/* Product */}
-      {order.product && (
-        <div className="flex gap-3 items-center">
-<Image
-  src={order.product.images?.[0] || "/placeholder.png"}
-  alt={order.product.name}
-  width={64}
-  height={64}
-  className="object-cover rounded"
-  unoptimized
-/>
+        {/* PRODUCT INFO */}
+        <div className="flex-1">
+          <p className="font-medium line-clamp-1">
+            {product?.name}
+          </p>
 
-          <div>
-            <p className="font-medium">{order.product.name}</p>
-            <p className="text-sm text-gray-600">₹{order.amount}</p>
-          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            ₹{order.amount}
+          </p>
         </div>
-      )}
 
-      {/* Status */}
-      <div className="flex justify-between items-center">
-        <span className="text-sm">
-          Payment:{" "}
-          <strong
-            className={
-              order.paymentStatus === "PAID"
-                ? "text-green-600"
-                : order.paymentStatus === "FAILED"
-                ? "text-red-600"
-                : "text-yellow-600"
-            }
-          >
-            {order.paymentStatus}
-          </strong>
-        </span>
+        {/* STATUS */}
+        <div className="text-right">
+          <p className="flex items-center gap-2 text-sm font-medium">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                delivered ? "bg-green-600" : "bg-yellow-500"
+              }`}
+            />
+            {delivered
+              ? "Delivered"
+              : order.orderStatus}
+          </p>
 
-        <span className="font-semibold">₹{totalAmount}</span>
+          {delivered && (
+            <p className="text-xs text-gray-500 mt-1">
+              Delivered on{" "}
+              {new Date(
+                order.delhivery?.deliveredAt ||
+                  order.updatedAt
+              ).toLocaleDateString()}
+            </p>
+          )}
+
+          {/* RATE & REVIEW */}
+          {delivered && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                // later: open rating modal
+              }}
+              className="mt-2 text-sm text-blue-600 font-medium hover:underline"
+            >
+              ★ Rate & Review Product
+            </button>
+          )}
+        </div>
       </div>
-
-      {/* Retry */}
-      {order.paymentStatus === "FAILED" && (
-        <button className="text-sm text-blue-600 underline">
-          Retry Payment
-        </button>
-      )}
-    </div>
+    </Link>
   );
 }
 

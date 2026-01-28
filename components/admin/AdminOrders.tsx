@@ -1,4 +1,4 @@
-// app/admin/orders/page.tsx
+// app/admin/orders/page.tsx   
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ export default function AdminOrders() {
 
   const fetchOrders = async () => {
     setLoading(true);
-    const res = await fetch("/api/admin/orders?status=PENDING");
+    const res = await fetch("/api/admin/orders");
     const data = await res.json();
     setOrders(data);
     setLoading(false);
@@ -19,17 +19,31 @@ export default function AdminOrders() {
     fetchOrders();
   }, []);
 
-  const createShipment = async (orderId: string) => {
-    const res = await fetch("/api/admin/delhivery/create-shipment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId }),
-    });
+const createShipment = async (orderId: string) => {
+  console.log("Creating shipment for:", orderId);
 
-    const data = await res.json();
-    alert(data.message || "Shipment Created");
-    fetchOrders();
-  };
+  const res = await fetch("/api/delhivery/create-shipment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderId }),
+  });
+
+  console.log("Response status:", res.status);
+
+  const text = await res.text();
+  console.log("Raw response from server:", text);
+
+  if (!res.ok) {
+    alert("API route not found or error. Check console.");
+    return;
+  }
+
+  const data = JSON.parse(text);
+  alert(data.message);
+};
+
+
+
 
   return (
     <div className="p-6">

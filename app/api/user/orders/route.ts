@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/db";
 
 import Order from "@/models/Order";
-import Product from "@/models/Products"; // ✅ IMPORTANT
+import Product from "@/models/Products";
 import User from "@/models/User";
 
 export async function GET() {

@@ -37,34 +37,39 @@ export default function OrderDetailsPage() {
       <div className="md:col-span-2 space-y-6">
 
         {/* PRODUCT CARD */}
-        {order.items.map((item: any, idx: number) => (
-          <div
-            key={idx}
-            className="flex gap-4 p-4 border rounded-lg bg-white"
-          >
-            <Image
-              src="/placeholder-product.png"
-              alt={item.name}
-              width={80}
-              height={80}
-              className="rounded object-cover"
-            />
+        {Array.isArray(order.items) && order.items.length > 0 ? (
+  order.items.map((item: any, idx: number) => (
+    <div
+      key={idx}
+      className="flex gap-4 p-4 border rounded-lg bg-white"
+    >
+      <Image
+        src={item.image || "/placeholder-product.png"}
+        alt={item.name}
+        width={80}
+        height={80}
+        className="rounded object-cover"
+      />
 
-            <div className="flex-1">
-              <h2 className="font-medium">{item.name}</h2>
-              <p className="text-sm text-gray-600">
-                Qty: {item.qty}
-              </p>
-              <p className="font-semibold mt-1">
-                ₹{item.price * item.qty}
-              </p>
-            </div>
+      <div className="flex-1">
+        <h2 className="font-medium">{item.name}</h2>
+        <p className="text-sm text-gray-600">Qty: {item.qty}</p>
+        <p className="font-semibold mt-1">
+          ₹{item.price * item.qty}
+        </p>
+      </div>
 
-            <div className="text-sm text-green-600 font-medium">
-              {order.orderStatus}
-            </div>
-          </div>
-        ))}
+      <div className="text-sm text-green-600 font-medium">
+        {order.orderStatus}
+      </div>
+    </div>
+  ))
+) : (
+  <div className="p-6 text-sm text-gray-500 border rounded-lg bg-white">
+    No items found for this order.
+  </div>
+)}
+
 
         {/* 📦 TRACKING SECTION (DELHIVERY READY) */}
         <div className="border rounded-lg p-6 bg-white">

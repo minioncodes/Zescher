@@ -1,5 +1,6 @@
 import Product from "@/models/admin/ProductSchema";
 import connectDB from "./db";
+import "@/models/Category";
 
 export async function getAllProducts() {
   await connectDB();

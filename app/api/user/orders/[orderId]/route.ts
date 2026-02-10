@@ -1,9 +1,46 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import mongoose from "mongoose";
 import connectDB from "@/lib/db";
 import Order from "@/models/Order";
-import mongoose from "mongoose";
 import { authOptions } from "@/lib/auth";
+
+/* ---------- TYPES ---------- */
+
+type OrderItem = {
+  name: string;
+  price: number;
+  qty: number;
+};
+
+type Address = {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+};
+
+type Delhivery = {
+  waybill?: string;
+  trackingUrl?: string;
+  status?: string;
+};
+
+type OrderDoc = {
+  _id: mongoose.Types.ObjectId;
+  userId: string;
+  items?: OrderItem[];
+  address?: Address;
+  delhivery?: Delhivery;
+  paymentMode: "COD" | "PREPAID";
+  orderStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/* ---------- ROUTE ---------- */
 
 export async function GET(
   req: Request,
@@ -19,7 +56,6 @@ export async function GET(
       );
     }
 
-    // ✅ MUST await params
     const { orderId } = await context.params;
 
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
@@ -31,11 +67,10 @@ export async function GET(
 
     await connectDB();
 
-    // ✅ NO populate (schema-safe)
-    const order = await Order.findOne({
+    const order = await Order.findOne<OrderDoc>({
       _id: orderId,
       userId: session.user.id,
-    });
+    }).lean<OrderDoc | null>();
 
     if (!order) {
       return NextResponse.json(
@@ -44,7 +79,19 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(order);
+    return NextResponse.json({
+      ...order,
+      items: Array.isArray(order.items) ? order.items : [],
+      address: order.address ?? {
+        name: "",
+        phone: "",
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+      },
+      delhivery: order.delhivery ?? null,
+    });
   } catch (err) {
     console.error("ORDER DETAILS ERROR:", err);
     return NextResponse.json(

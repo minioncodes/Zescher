@@ -1,6 +1,37 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const OrderSchema = new mongoose.Schema(
+/* ---------- SUB SCHEMAS ---------- */
+
+const OrderItemSchema = new Schema(
+  {
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    name: { type: String, required: true },
+    image: { type: String, required: true }, // ✅ SINGLE IMAGE
+    price: { type: Number, required: true },
+    qty: { type: Number, required: true },
+  },
+  { _id: false }
+);
+
+const AddressSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pincode: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+/* ---------- ORDER SCHEMA ---------- */
+
+const OrderSchema = new Schema(
   {
     orderId: {
       type: String,
@@ -9,41 +40,33 @@ const OrderSchema = new mongoose.Schema(
     },
 
     userId: {
-      type: String, // UUID user id
+      type: String, // matches your auth setup
       required: true,
     },
 
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+    items: {
+      type: [OrderItemSchema],
       required: true,
-    },
-    razorpayOrderId: {
-  type: String,
-},
-
-    address: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
-      name: String,
-      phone: String,
-      address: String,
-      city: String,
-      state: String,
-      pincode: String
+      default: [],
     },
 
-    amount: {
+    totalAmount: {
       type: Number,
       required: true,
     },
 
-    paymentMethod: {
+    paymentMode: {
       type: String,
-      enum: ["COD", "ONLINE"],
+      enum: ["COD", "PREPAID"],
       required: true,
     },
+
+    address: {
+      type: AddressSchema,
+      required: true,
+    },
+
+    razorpayOrderId: String,
 
     orderStatus: {
       type: String,
@@ -60,7 +83,8 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ Auto-generate orderId before save
+/* ---------- AUTO ORDER ID ---------- */
+
 OrderSchema.pre("validate", function (next) {
   if (!this.orderId) {
     this.orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 10000)}`;

@@ -7,11 +7,13 @@ import User from "@/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // ================= GOOGLE =================
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
+    // ================= CREDENTIALS =================
     Credentials({
       name: "Credentials",
       credentials: {
@@ -26,16 +28,21 @@ export const authOptions: NextAuthOptions = {
         await connectDB();
 
         const user = await User.findOne({ email: credentials.email });
-        if (!user) throw new Error("User not found");
+        if (!user || !user.password) {
+          throw new Error("User not found");
+        }
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password
         );
-        if (!isValid) throw new Error("Invalid password");
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
 
+        // IMPORTANT: return MongoDB _id
         return {
-          id: user._id.toString(), // 🔒 Mongo ObjectId
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
         };
@@ -43,35 +50,63 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
 
-callbacks: {
-  async jwt({ token, user }) {
-    await connectDB();
+  callbacks: {
+    // ================= JWT =================
+    async jwt({ token, user }) {
+      // First login (user is available)
+      if (user) {
+        token.id = user.id; // already Mongo _id string
+        token.email = user.email;
+        return token;
+      }
 
-    const email = user?.email ?? token.email;
-    if (!email) return token;
+      // Subsequent requests
+      if (!token.id && token.email) {
+        await connectDB();
 
-    const dbUser = await User.findOne({ email }).select("_id");
-    if (!dbUser) {
-      throw new Error("User not found in jwt callback");
-    }
+        const dbUser = await User.findOne({ email: token.email }).select("_id");
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+        }
+      }
 
-    token.id = dbUser._id.toString(); // 🔒 Mongo ObjectId ONLY
-    return token;
+      return token;
+    },
+
+    // ================= SESSION =================
+    async session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string; // Mongo ObjectId string
+      }
+      return session;
+    },
+
+    // ================= GOOGLE SIGN-IN HANDLER =================
+async signIn({ user, account }) {
+  if (account?.provider !== "google") return true;
+
+  await connectDB();
+
+  const existingUser = await User.findOne({ email: user.email });
+
+  if (!existingUser) {
+    await User.create({
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      provider: "google",
+    });
+  }
+
+  return true;
+}
   },
-
-  async session({ session, token }) {
-    if (!token.id) {
-      throw new Error("Missing token.id in session callback");
-    }
-
-    session.user.id = token.id as string;
-    return session;
-  },
-},
-
 
   pages: {
     signIn: "/auth/user/signin",

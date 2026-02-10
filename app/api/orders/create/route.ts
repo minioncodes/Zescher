@@ -4,13 +4,15 @@ import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/db";
 
 import Order from "@/models/Order";
-import Products from "@/models/Products";
+import Product from "@/models/Products";
 import User from "@/models/User";
+import Address from "@/models/Address";
 
 export async function POST(req: Request) {
   try {
     await connectDB();
 
+    /* ---------- AUTH ---------- */
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,24 +23,65 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    console.log("DB USER ID:", dbUser._id, typeof dbUser._id);
-
+    /* ---------- BODY ---------- */
     const { product, addressId, paymentMethod } = await req.json();
 
-    const dbProduct = await Products.findById(product);
+    if (!product || !addressId || !paymentMethod) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- PRODUCT ---------- */
+    const dbProduct = await Product.findById(product);
     if (!dbProduct) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    /* ---------- ADDRESS ---------- */
+    const dbAddress = await Address.findById(addressId);
+    if (!dbAddress) {
+      return NextResponse.json({ error: "Address not found" }, { status: 404 });
+    }
+
+    /* ---------- CREATE ORDER ---------- */
 const order = await Order.create({
-  userId: dbUser._id, 
-  product: dbProduct._id,
-  address: addressId,
-  amount: dbProduct.price,
-  paymentMethod,
+  userId: dbUser._id,
+
+items: [
+  {
+    productId: dbProduct._id,
+    name: dbProduct.name,
+    image: dbProduct.images?.[0], // SINGLE IMAGE
+    price: dbProduct.price,
+    qty: 1,
+  },
+],
+
+totalAmount: dbProduct.price,
+paymentMode: paymentMethod,
+
+
+  address: {
+    name: dbAddress.name || "N/A",
+    phone: dbAddress.phone || "0000000000",
+    address:
+      dbAddress.address ||
+      dbAddress.addressLine ||
+      dbAddress.line1 ||
+      "UNKNOWN ADDRESS",
+    city: dbAddress.city || "N/A",
+    state: dbAddress.state || "N/A",
+    pincode: dbAddress.pincode || "000000",
+  },
+
+  totalAmount: dbProduct.price,
+
+  paymentMode: paymentMethod === "COD" ? "COD" : "PREPAID",
   orderStatus: "CREATED",
-  paymentStatus: paymentMethod === "COD" ? "COD" : "PENDING",
 });
+
 
 
     return NextResponse.json(order, { status: 201 });
